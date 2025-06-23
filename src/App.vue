@@ -19,7 +19,7 @@ const pageStore = usePageStore();
 const isRouterActive = pageStore.isRouterActive;
 
 
-
+console.log('cz')
 
 </script>
 <style lang="scss">
