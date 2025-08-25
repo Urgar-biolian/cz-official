@@ -37,6 +37,7 @@
     "@vueuse/core": "^10.11.1",
     "ant-design-vue": "~4.2.6",
     "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
     "esbuild": "^0.23.1",
     "gsap": "^3.12.7",
     "lodash-es": "^4.17.21",

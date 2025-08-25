@@ -15,9 +15,13 @@
               i-ri:share-box-fill text-4 ml-1>
             </div></a>
         </div>
+
         <button icon-btn @click="toggleDark()">
           <div i-carbon-sun dark:i-carbon-moon w-8 mr-3 />
         </button>
+
+        <ActivityCalendar />
+
         <div mr-4 v-if="!isLogin">
           <router-link to="/register" class="hover:text-blue-5" cursor-pointer>注册 </router-link>|
           <router-link to="/login" class="hover:text-blue-5" cursor-pointer>登录</router-link>
@@ -64,6 +68,10 @@
           flex items-center pl-8 @click="closeMenu" border-b>通知</router-link>
         <router-link to="/member" class="phone-link" border-b :class="{ 'active': route.path === '/member' }"
           cursor-pointer h-12 flex items-center pl-8 @click="closeMenu">成员</router-link>
+        <div class="phone-link" border-b cursor-pointer h-12 flex items-center pl-8 @click="showMobileCalendar">
+          活动日历
+          <CarryOutOutlined class="ml-2" />
+        </div>
         <a class="item" href="http://1.92.82.236:5173/" target="_blank" border-b flex items-center cursor-pointer h-12
           pl-8>文档
           <div inline-block i-ri:share-box-fill text-4 ml-1 text-gray-7>
@@ -94,6 +102,9 @@ import { useDeviceType } from '~/hooks/useDeviceType';
 import { useUserStore } from '~/store/user';
 import CZAvatar from '../CZAvatar.vue';
 import { toggleDark } from '~/composables/dark';
+import ActivityCalendar from '../ActivityCalendar.vue';
+import { CarryOutOutlined } from '@ant-design/icons-vue';
+
 
 const route = useRoute();
 
@@ -137,6 +148,12 @@ const router = useRouter();
 const handleLogout = () => {
   userStore.logout();
   router.go(0);
+};
+
+const showMobileCalendar = () => {
+  closeMenu();
+  // 触发手机端日历显示
+  window.dispatchEvent(new CustomEvent('show-mobile-calendar'));
 };
 
 
@@ -232,4 +249,7 @@ div.header {
 .fade-enter-to,
 .fade-leave-from {
   opacity: 0.5;
-}</style>
+}
+
+
+</style>

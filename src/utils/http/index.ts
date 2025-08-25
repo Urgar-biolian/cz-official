@@ -315,7 +315,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
 }
 export const defHttp = createAxios({
   requestOptions: {
-    apiUrl: getAppEnvConfig().VITE_GLOB_API_URL,
-
+    apiUrl: 'http://localhost:3000',
+    urlPrefix: '/api',
   }
 });
