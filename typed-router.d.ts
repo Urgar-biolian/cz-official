@@ -20,7 +20,13 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/[...all]': RouteRecordInfo<'/[...all]', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
+    '/comment/[commentId]': RouteRecordInfo<'/comment/[commentId]', '/comment/:commentId', { commentId: ParamValue<true> }, { commentId: ParamValue<false> }>,
+    '/comment/CommentForm': RouteRecordInfo<'/comment/CommentForm', '/comment/CommentForm', Record<never, never>, Record<never, never>>,
+    '/comment/CommentItem': RouteRecordInfo<'/comment/CommentItem', '/comment/CommentItem', Record<never, never>, Record<never, never>>,
+    '/comment/CommentSection': RouteRecordInfo<'/comment/CommentSection', '/comment/CommentSection', Record<never, never>, Record<never, never>>,
+    '/comment/Spin': RouteRecordInfo<'/comment/Spin', '/comment/Spin', Record<never, never>, Record<never, never>>,
     '/forgotPassword': RouteRecordInfo<'/forgotPassword', '/forgotPassword', Record<never, never>, Record<never, never>>,
+    '/lanqiao': RouteRecordInfo<'/lanqiao', '/lanqiao', Record<never, never>, Record<never, never>>,
     '/login': RouteRecordInfo<'/login', '/login', Record<never, never>, Record<never, never>>,
     '/member': RouteRecordInfo<'/member', '/member', Record<never, never>, Record<never, never>>,
     '/notify': RouteRecordInfo<'/notify', '/notify', Record<never, never>, Record<never, never>>,

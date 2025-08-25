@@ -35,9 +35,13 @@
   },
   "dependencies": {
     "@nestjs/typeorm": "^11.0.0",
+    "@types/vue-router": "^2.0.0",
     "@vueuse/core": "^10.11.1",
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-vue": "^5.1.12",
     "ant-design-vue": "~4.2.6",
     "axios": "^1.7.9",
+    "dompurify": "^3.2.6",
     "esbuild": "^0.23.1",
     "gsap": "^3.12.7",
     "lodash-es": "^4.17.21",

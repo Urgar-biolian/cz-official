@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UploadModule } from './upload/upload.module';
 import { ProjectModule } from './project/project.module';
 import { MessageModule } from './message/message.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MessageModule } from './message/message.module';
     }),
     UploadModule,
     ProjectModule,
+    CommentModule,  // 评论模块
     MessageModule,]
 })
 export class AppModule { }
