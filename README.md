@@ -1,39 +1,91 @@
-# CZ
+<h1 align='center'>
+  CZ Official Website
+</h1>
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+<h5 align='center'>
+<b>based on vue3 and nestjs.</b>
+</h5>
 
-#### 软件架构
-软件架构说明
-
-
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+<br>
 
 
-#### 特技
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+## 功能
+
+- 🗂️ 创智项目展览
+
+- 💬 工作室新消息
+
+- 👨🏻‍💻 当前工作室成员
+
+- 📖 在线学习文档
+
+- 🎨 留言板 (待开发)
+
+
+
+## 结构
+
+- / 主网站
+
+- app/sever/ nest后台
+
+- app/message-board/ 留言版（待开发）
+
+- docs/ 学习文档
+
+后台管理系统过于繁杂，迁移至[这里](https://github.com/huanxiaomang/cz-admin)
+
+
+## 参与开发
+
+### 1. 安装依赖
+
+首先进入要开发的项目目录，然后：
+
+```bash
+pnpm install
+```
+
+### 2. 配置 `.env` 文件
+
+在app/sever/下创建.env文件，填写你的本地配置：
+
+```
+DATABASE_URL="mysql://用户名:密码@localhost:端口/数据库名"
+# TOKEN密钥
+TOKEN_SECRET="你的密钥"
+# 端口
+PORT=3000
+URL=localhost
+```
+
+### 3. 启动 nest 服务
+
+启动之前，先依次执行:
+#### 生成数据库迁移
+
+```bash
+npx prisma migrate dev
+```
+
+这一步会自动执行`prisma generate`命令，以生成对应的@prisma/client包。如果没有执行成功可以尝试手动执行：
+```bash
+npx prisma generate
+```
+
+#### 重新填充数据库
+```bash
+npx prisma migrate reset
+```
+
+
+现在启动nest服务：
+```bash
+pnpm dev:serve
+```
+
+确保nest服务启动成功后，可以使用`pnpm dev:web`启动前端服务。
+
+
+
