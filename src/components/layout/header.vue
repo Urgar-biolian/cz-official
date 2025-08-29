@@ -11,6 +11,9 @@
             cursor-pointer>通知</router-link>
           <router-link to="/member" class="item" :class="{ 'active': route.path === '/member' }"
             cursor-pointer>成员</router-link>
+
+          <router-link to="/lanqiao" class="item" :class="{ 'active': route.path === '/lanqiao' }"
+            cursor-pointer>蓝桥</router-link>
           <a class="item" href="http://docs.czstudio.tech/" target="_blank" flex items-center>文档<div inline-block
               i-ri:share-box-fill text-4 ml-1>
             </div></a>
@@ -64,6 +67,9 @@
           flex items-center pl-8 @click="closeMenu" border-b>通知</router-link>
         <router-link to="/member" class="phone-link" border-b :class="{ 'active': route.path === '/member' }"
           cursor-pointer h-12 flex items-center pl-8 @click="closeMenu">成员</router-link>
+
+        <router-link to="/lanqiao" class="phone-link" border-b :class="{ 'active': route.path === '/lanqiao' }"
+          cursor-pointer h-12 flex items-center pl-8 @click="closeMenu">蓝桥</router-link>
         <a class="item" href="http://1.92.82.236:5173/" target="_blank" border-b flex items-center cursor-pointer h-12
           pl-8>文档
           <div inline-block i-ri:share-box-fill text-4 ml-1 text-gray-7>

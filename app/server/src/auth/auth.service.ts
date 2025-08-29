@@ -6,10 +6,16 @@ import { user } from '@prisma/client'
 import { JwtService } from '@nestjs/jwt'
 import LoginDto from './dto/login.dto'
 import UpdateUserDto from './dto/updateUser.dto'
+import ResetPasswordDto from './dto/reset-password.dto'
+import { VerificationCodeService } from './verification-code.service'
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwt: JwtService) { }
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private verificationCodeService: VerificationCodeService
+  ) { }
 
   async getUserInfo(userId) {
     const user = await this.prisma.user.findUnique({
@@ -108,6 +114,25 @@ export class AuthService {
     }
   }
 
+  async resetPassword(dto: ResetPasswordDto) {
+    // 验证验证码
+    await this.verificationCodeService.verifyCode(dto.email, dto.code, 'password_reset');
+
+    // 查找用户
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email }
+    });
+
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+
+    // 更新密码
+    await this.prisma.user.update({
+      where: { email: dto.email },
+      data: { password: await hash(dto.newPassword) }
+    });
+  }
   private async token({ userId, username }) {
     return await this.jwt.signAsync({
       username,

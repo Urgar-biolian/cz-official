@@ -7,7 +7,6 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     Badge: typeof import('./src/components/Badge.vue')['default']
     CZAvatar: typeof import('./src/components/CZAvatar.vue')['default']
     Footer: typeof import('./src/components/layout/footer.vue')['default']
@@ -21,5 +20,6 @@ declare module 'vue' {
     StackIcon: typeof import('./src/components/StackIcon.vue')['default']
     SvgIconG: typeof import('./src/components/SvgIconG/index.vue')['default']
     UserModal: typeof import('./src/components/UserModal/index.vue')['default']
+    WinnerList: typeof import('./src/components/WinnerList.vue')['default']
   }
 }

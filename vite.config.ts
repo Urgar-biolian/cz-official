@@ -17,6 +17,29 @@ import  externalGlobals  from 'rollup-plugin-external-globals';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 export default defineConfig({
+  // 定义环境变量
+  define: {
+    'import.meta.env.VITE_GLOB_APP_TITLE': JSON.stringify('创智工作室'),
+    'import.meta.env.VITE_GLOB_API_URL': JSON.stringify('http://localhost:3000'),
+    'import.meta.env.VITE_GLOB_API_URL_PREFIX': JSON.stringify('/api'),
+    'import.meta.env.VITE_GLOB_UPLOAD_URL': JSON.stringify('http://localhost:3000'),
+  },
+
+  // 开发服务器配置
+  server: {
+    port: 3333,
+    host: true,
+    // API代理配置
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+      },
+    },
+  },
+
   esbuild: {
     pure: ['console.log'], // 删除 console.log
     drop: ['debugger'], // 删除 debugger

@@ -12,7 +12,10 @@
         </a-form-item>
 
         <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
-          <a-checkbox v-model:checked="formState.remember">请记住我</a-checkbox>
+          <div class="flex justify-between items-center">
+            <a-checkbox v-model:checked="formState.remember">请记住我</a-checkbox>
+            <router-link to="/forgotPassword" class="text-blue-500 hover:underline">忘记密码？</router-link>
+          </div>
         </a-form-item>
 
         <a-form-item :wrapper-col="{ offset: 8, span: 16 }">

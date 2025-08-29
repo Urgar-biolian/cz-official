@@ -56,6 +56,8 @@ async function run() {
       },
     })
   }
+
+  console.log('用户、项目和消息测试数据插入完成')
 }
 
-run()
+run();
