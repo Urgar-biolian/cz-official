@@ -1,34 +1,41 @@
 <template>
   <div class="lanqiao-container">
-    <!-- 顶部按钮区 -->
-    <div class="lanqiao-actions">
-      <button class="action-btn" @click="goToDiscuss">讨论区</button>
-      <button class="action-btn" @click="goToOfficial">蓝桥官网</button>
-    </div>
-    <!-- 分组tab -->
-    <div class="group-tabs">
-      <div
-        v-for="group in groupTabs"
-        :key="group"
-        :class="['group-tab', { active: group === selectedGroup }]"
-        @click="selectedGroup = group"
-      >
-        {{ group }}
-      </div>
-    </div>
-    <!-- 获奖者卡片区 -->
-    <div class="winners-grid">
-      <div v-for="winner in filteredWinners" :key="winner.id" class="winner-card">
-        <div class="winner-card-header">
-          <img class="winner-avatar" :src="winner.avatar || '/src/assets/images/default-avatar.png'" :alt="winner.name" />
+    <!-- 子路由视图 -->
+    <RouterView v-slot="{ Component }">
+      <component :is="Component" v-if="Component" />
+      <template v-else>
+        <!-- 默认内容：蓝桥杯获奖者展示 -->
+        <!-- 顶部按钮区 -->
+        <div class="lanqiao-actions">
+          <button class="action-btn" @click="goToDiscuss">讨论区</button>
+          <button class="action-btn" @click="goToOfficial">蓝桥官网</button>
         </div>
-        <div class="winner-card-body">
-          <div class="winner-name">{{ winner.name }}</div>
-          <div class="winner-competition">{{ winner.competition }}</div>
-          <div class="winner-award">{{ winner.award }}</div>
+        <!-- 分组tab -->
+        <div class="group-tabs">
+          <div
+            v-for="group in groupTabs"
+            :key="group"
+            :class="['group-tab', { active: group === selectedGroup }]"
+            @click="selectedGroup = group"
+          >
+            {{ group }}
+          </div>
         </div>
-      </div>
-    </div>
+        <!-- 获奖者卡片区 -->
+        <div class="winners-grid">
+          <div v-for="winner in filteredWinners" :key="winner.id" class="winner-card">
+            <div class="winner-card-header">
+              <img class="winner-avatar" :src="winner.avatar || '/src/assets/images/default-avatar.png'" :alt="winner.name" />
+            </div>
+            <div class="winner-card-body">
+              <div class="winner-name">{{ winner.name }}</div>
+              <div class="winner-competition">{{ winner.competition }}</div>
+              <div class="winner-award">{{ winner.award }}</div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </RouterView>
   </div>
 </template>
 

@@ -23,6 +23,9 @@ export class AuthService {
         userId: Number(userId)
       }
     })
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
     return await this.serializeUser(user);
   }
 

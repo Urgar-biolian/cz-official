@@ -130,6 +130,11 @@ export function getUserInfo() {
   const userInfo = userStore.getUserInfo as UserInfo;
   const userId = userInfo.userId;
 
+  // 验证userId是否有效
+  if (!userId || userId === '0' || userId === 'undefined' || userId === 'null') {
+    throw new Error('Invalid user ID. Please login again.');
+  }
+
   return defHttp.get<GetUserInfoModel>(
     { url: Api.GetUserInfo + `/${userId}`, },
   );
