@@ -193,7 +193,7 @@ export function verifyCodeApi(
   params: VerifyCodeParams,
   mode: ErrorMessageMode = "modal",
 ) {
-  return defHttp.post<{ message: string }>(
+  return defHttp.post<{ valid: boolean; message: string }>(
     {
       url: Api.VerifyCode,
       data: params

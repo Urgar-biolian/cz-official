@@ -10,6 +10,10 @@
     </RouterView>
     <Footer />
     <div class="bg pointer-events-none fixed inset-0 z-[-1] select-none bg-top bg-repeat"></div>
+    <!-- <CommentSection
+       :current-user="currentUser" 
+        :initial-comments="comments" 
+      /> -->
 
   </main>
 </template>
@@ -17,10 +21,6 @@
 import { usePageStore } from "./store/page";
 const pageStore = usePageStore();
 const isRouterActive = pageStore.isRouterActive;
-
-
-
-
 </script>
 <style lang="scss">
 .bg {

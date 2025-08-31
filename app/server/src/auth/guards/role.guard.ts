@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { user } from '@prisma/client'
+import { User } from '@prisma/client'
 import { Observable } from 'rxjs'
 import { Role } from '../enum'
 
@@ -11,7 +11,7 @@ export class RoleGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
   
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    const user = context.switchToHttp().getRequest().user as user;
+    const user = context.switchToHttp().getRequest().user as User;
     const requiredRoles = this.reflector.get<Role[]>('roles', context.getHandler());
     const userRole = typeof user.role === 'string' ? user.role.toUpperCase() : user.role;
     this.logger.debug(`User role: ${userRole}, Required roles: ${requiredRoles?.join(', ')}`);

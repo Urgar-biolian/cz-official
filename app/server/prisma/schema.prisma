@@ -1,46 +1,102 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
-model user {
-    userId      Int      @id @default(autoincrement()) @db.UnsignedInt
-    username    String   @unique
-    password    String
-    role        String? // CZ_MEMBER 或者 COMMON 或者ADMIN
-    email       String   @unique
-    avatar      String?
-    github      String?
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    background  String?
-    description String?  @db.Text
-    major       String  // 前端开发、后端开发等等
-    grade       Int
-    badge       String? // 徽标，是一个字符串数组,格式形如蓝桥杯国三,创智成员
-    score       Int @default(0)
+model User {
+  userId       Int           @id @default(autoincrement()) @map("user_id") @db.UnsignedInt
+  username     String        @unique
+  password     String
+  role         String?
+  email        String        @unique
+  avatar       String?
+  github       String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  background   String?
+  description  String?       @db.Text
+  major        String
+  grade        Int
+  badge        String?
+  score        Int           @default(0)
+  comments     Comment[]     @relation("userComments")
+  commentLikes CommentLike[] @relation("userLikes")
+
+  @@map("user")
 }
 
-model project {
-    id        Int      @id @default(autoincrement()) @db.UnsignedInt
-    title     String
-    content   String   @db.Text
-    stack     String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    members   String // 项目成员，是一个用户id数组,格式形如1,2,3
+model Project {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  title     String
+  content   String   @db.Text
+  stack     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  members   String
+
+  @@map("project")
 }
 
-model message {
-    id        Int      @id @default(autoincrement()) @db.UnsignedInt
-    title     String
-    content   String   @db.Text
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Message {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("message")
+}
+
+model Comment {
+  id              Int                 @id @default(autoincrement()) @db.UnsignedInt
+  content         String              @db.MediumText
+  userId          Int                 @map("user_id") @db.UnsignedInt
+  rootParentId    Int?                @map("root_parent_id") @db.UnsignedInt
+  createdAt       DateTime            @default(now()) @map("created_time")
+  isDeleted       Boolean             @default(false) @map("is_deleted")
+  parentId        Int?                @map("parent_id") @db.UnsignedInt
+  likeCount       Int                 @default(0) @map("like_count")
+  replyCount      Int                 @default(0) @map("reply_count")
+  attachmentCount Int                 @default(0) @map("attachment_count")
+  parent          Comment?            @relation("commentReplies", fields: [parentId], references: [id])
+  replies         Comment[]           @relation("commentReplies")
+  user            User                @relation("userComments", fields: [userId], references: [userId])
+  attachments     CommentAttachment[] @relation("commentAttachments")
+  likes           CommentLike[]       @relation("commentLikes")
+
+  @@index([parentId], map: "comment_parent_id_fkey")
+  @@index([userId], map: "comment_user_id_fkey")
+  @@map("comment")
+}
+
+model CommentLike {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  commentId Int      @map("comment_id") @db.UnsignedInt
+  userId    Int      @map("user_id") @db.UnsignedInt
+  createdAt DateTime @default(now()) @map("create_time")
+  comment   Comment  @relation("commentLikes", fields: [commentId], references: [id])
+  user      User     @relation("userLikes", fields: [userId], references: [userId])
+
+  @@unique([commentId, userId], name: "uk_comment_user")
+  @@index([userId], map: "comment_like_user_id_fkey")
+  @@map("comment_like")
+}
+
+model CommentAttachment {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  commentId Int      @map("comment_id") @db.UnsignedInt
+  fileName  String   @map("file_name")
+  filePath  String   @map("file_path")
+  fileType  String   @map("file_type")
+  createdAt DateTime @default(now()) @map("create_time")
+  comment   Comment  @relation("commentAttachments", fields: [commentId], references: [id])
+
+  @@index([commentId], map: "comment_attachment_comment_id_fkey")
+  @@map("comment_attachment")
 }
 
 model Winner {

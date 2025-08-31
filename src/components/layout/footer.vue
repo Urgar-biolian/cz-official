@@ -28,6 +28,7 @@ nav{
     font-size: 14px;
     font-weight: 400;
     background: #1F2329;
+    
 }
 .cn{
     font-family: Gilroy-regular, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';

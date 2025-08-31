@@ -17,7 +17,7 @@ defineOptions({ name: "CZAvatar" });
 
 const props = defineProps({
   userId: {
-    type: String,
+    type: [String, Number],
     required: true,
   },
   clickFn: {
@@ -49,7 +49,7 @@ function handleClick() {
 }
 
 onMounted(async () => {
-  userInfo.value = await getUserInfoById(props.userId);
+  userInfo.value = await getUserInfoById(String(props.userId));
   const img = document.createElement('img');
   loadImage(userInfo.value.avatar, (u) => showAvatar.value = u);
 

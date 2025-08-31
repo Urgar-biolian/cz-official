@@ -78,4 +78,5 @@ const onFinishFailed = (errorInfo: any) => {
   setTimeout(hide, 500);
 };
 </script>
+<mcfile name="forgotPassword.vue" path=".\forgotPassword.vue"></mcfile>
 

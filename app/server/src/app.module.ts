@@ -6,6 +6,7 @@ import { UploadModule } from './upload/upload.module';
 import { ProjectModule } from './project/project.module';
 import { MessageModule } from './message/message.module';
 import { WinnersModule } from './winners/winners.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { WinnersModule } from './winners/winners.module';
     UploadModule,
     ProjectModule,
     MessageModule,
-    WinnersModule
+    WinnersModule,
+    CommentModule,  // 评论模块
   ]
 })
 export class AppModule { }

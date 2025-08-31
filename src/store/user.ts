@@ -242,6 +242,6 @@ export const useUserStore = defineStore({
       } catch (error) {
         return Promise.reject(error);
       }
-    }
+    },
   },
 });
