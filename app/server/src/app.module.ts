@@ -7,6 +7,7 @@ import { ProjectModule } from './project/project.module';
 import { MessageModule } from './message/message.module';
 import { WinnersModule } from './winners/winners.module';
 import { CommentModule } from './comment/comment.module';
+import { ActivityModule } from './activity/activity.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CommentModule } from './comment/comment.module';
     MessageModule,
     WinnersModule,
     CommentModule,  // 评论模块
+    ActivityModule,
   ]
 })
 export class AppModule { }

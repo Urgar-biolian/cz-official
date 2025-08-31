@@ -9,6 +9,7 @@
       </KeepAlive>
     </RouterView>
     <Footer />
+    <MobileActivityCalendar />
     <div class="bg pointer-events-none fixed inset-0 z-[-1] select-none bg-top bg-repeat"></div>
     <!-- <CommentSection
        :current-user="currentUser" 
@@ -19,6 +20,8 @@
 </template>
 <script setup lang="ts">
 import { usePageStore } from "./store/page";
+import MobileActivityCalendar from "./components/MobileActivityCalendar.vue";
+
 const pageStore = usePageStore();
 const isRouterActive = pageStore.isRouterActive;
 </script>

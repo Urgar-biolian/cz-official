@@ -7,7 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
+    ACalendar: typeof import('ant-design-vue/es')['Calendar']
+    ActivityCalendar: typeof import('./src/components/ActivityCalendar.vue')['default']
     Badge: typeof import('./src/components/Badge.vue')['default']
     CZAvatar: typeof import('./src/components/CZAvatar.vue')['default']
     Footer: typeof import('./src/components/layout/footer.vue')['default']
@@ -15,6 +16,7 @@ declare module 'vue' {
     IndexVideo: typeof import('./src/components/view/IndexVideo.vue')['default']
     Introduction: typeof import('./src/components/view/Introduction.vue')['default']
     MemberCard: typeof import('./src/components/MemberCard.vue')['default']
+    MobileActivityCalendar: typeof import('./src/components/MobileActivityCalendar.vue')['default']
     RandomWord: typeof import('./src/components/RandomWord.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

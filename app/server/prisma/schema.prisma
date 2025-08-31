@@ -109,3 +109,17 @@ model Winner {
 
   @@map("winners")
 }
+
+model activity {
+  id        Int      @id @default(autoincrement())
+  intro     String
+  detail    String   @db.Text
+  sdate     String
+  edate     String
+  joiners   String
+  status    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("activities")
+}
