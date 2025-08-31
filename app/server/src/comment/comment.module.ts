@@ -1,11 +1,22 @@
 import { Module } from '@nestjs/common';
-import { CommentController } from './comment.controller';
 import { CommentService } from './comment.service';
-import { PrismaModule } from '../prisma/prisma.module';
+import { CommentController } from './comment.controller';
+import { PrismaService } from '../prisma/prisma.service';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get('TOKEN_SECRET'),
+        signOptions: { expiresIn: '100d' },
+      }),
+    }),
+  ],
   controllers: [CommentController],
-  providers: [CommentService],
+  providers: [CommentService, PrismaService],
 })
-export class CommentModule { }
+export class CommentModule {}

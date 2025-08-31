@@ -7,8 +7,8 @@
         <!-- 默认内容：蓝桥杯获奖者展示 -->
         <!-- 顶部按钮区 -->
         <div class="lanqiao-actions">
-          <button class="action-btn" @click="goToDiscuss">讨论区</button>
           <button class="action-btn" @click="goToOfficial">蓝桥官网</button>
+          <button class="action-btn discussion-btn" @click="goToDiscussion">讨论交流</button>
         </div>
         <!-- 分组tab -->
         <div class="group-tabs">
@@ -65,11 +65,12 @@ const filteredWinners = computed(() => {
   return winnersData.value.filter(w => w.competition === selectedGroup.value);
 });
 
-function goToDiscuss() {
-  router.push('/lanqiao/discuss');
-}
 function goToOfficial() {
   window.open('https://dasai.lanqiao.cn/', '_blank');
+}
+
+function goToDiscussion() {
+  router.push('/comment');
 }
 </script>
 
@@ -107,6 +108,14 @@ function goToOfficial() {
 .action-btn:hover {
   background: linear-gradient(90deg, #396afc 0%, #2948ff 100%);
   transform: translateY(-2px) scale(1.04);
+}
+
+.discussion-btn {
+  background: linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%) !important;
+}
+
+.discussion-btn:hover {
+  background: linear-gradient(90deg, #ff5252 0%, #d63031 100%) !important;
 }
 .group-tabs {
   display: flex;

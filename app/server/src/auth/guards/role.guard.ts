@@ -7,15 +7,15 @@ import { Role } from '../enum'
 @Injectable()
 export class RoleGuard implements CanActivate {
   private readonly logger = new Logger(RoleGuard.name);
-  
+
   constructor(private reflector: Reflector) {}
-  
+
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const user = context.switchToHttp().getRequest().user as User;
     const requiredRoles = this.reflector.get<Role[]>('roles', context.getHandler());
     const userRole = typeof user.role === 'string' ? user.role.toUpperCase() : user.role;
     this.logger.debug(`User role: ${userRole}, Required roles: ${requiredRoles?.join(', ')}`);
-    
+
     if (!user) {
       this.logger.warn('No user found in request');
       return false;

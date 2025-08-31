@@ -1,85 +1,60 @@
-import { Controller, Post, Body, Get, Param, Query, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Headers,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
-
-// 创建评论的DTO
-class CreateCommentDto {
-  content: string;
-  userId: number;
-  parentId?: number;
-  rootParentId?: number;
-}
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
+import { Auth, Admin } from '../auth/decorators/auth.decorator';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('comments')
 export class CommentController {
-  constructor(private commentService: CommentService) { }
+  constructor(
+    private readonly commentService: CommentService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  // 获取所有评论（支持查询参数）
   @Get()
-  async getAllComments(@Query() query: {
-    parent_id?: number | null;
-    include_deleted?: boolean;
-  }) {
-    console.log('控制器 getAllComments 被调用，查询参数:', query);
-    const result = await this.commentService.getAllComments(query);
-    console.log('控制器返回结果:', result);
-    console.log('返回结果类型:', typeof result);
-    console.log('是否为数组:', Array.isArray(result));
-    return result;
+  findAll(@Query('include_deleted') includeDeleted?: string) {
+    const include = includeDeleted === 'true';
+    return this.commentService.findAll(include);
   }
 
-  // 获取单个评论详情
   @Get(':id')
-  async getCommentById(@Param('id') id: string) {
-    return this.commentService.getCommentById(parseInt(id));
+  findOne(@Param('id') id: string) {
+    return this.commentService.findOne(+id);
   }
 
-  // 创建评论
+  @Auth()
   @Post()
-  async createComment(@Body() data: CreateCommentDto) {
-    console.log('控制器接收到的数据:', data);
-
-    // 参数验证
-    if (!data.content || !data.userId) {
-      throw new Error('content 和 userId 是必需的');
-    }
-
-    return this.commentService.createComment(data);
+  async create(
+    @Body() createCommentDto: CreateCommentDto,
+    @Headers('authorization') authorization: string,
+  ) {
+    const token = authorization.split(' ')[1];
+    const payload = this.jwtService.decode(token) as any;
+    const userId = payload.sub;
+    
+    return this.commentService.create(createCommentDto, userId);
   }
 
-  // 更新评论
+  @Auth()
   @Patch(':id')
-  async updateComment(
-    @Param('id') id: string,
-    @Body() data: { content: string }
-  ) {
-    return this.commentService.updateComment(parseInt(id), data);
+  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
+    return this.commentService.update(+id, updateCommentDto);
   }
 
-  // 删除评论
+  @Admin()
   @Delete(':id')
-  async deleteComment(@Param('id') id: string) {
-    return this.commentService.deleteComment(parseInt(id));
-  }
-
-  // 获取特定帖子的评论
-  @Get('post/:postId')
-  async getByPost(@Param('postId') postId: string) {
-    return this.commentService.getCommentsByPost(parseInt(postId));
-  }
-
-  // 点赞/取消点赞评论（切换）
-  @Post(':commentId/like')
-  async toggleLikeComment(
-    @Param('commentId') commentId: string,
-    @Body('userId') userId: number,
-  ) {
-    console.log('toggleLikeComment:东方大道', { commentId, userId });
-    return this.commentService.toggleLikeComment(parseInt(commentId), userId);
-  }
-
-  // 获取评论详情
-  @Get(':commentId/detail')
-  async getCommentDetail(@Param('commentId') commentId: string) {
-    return this.commentService.getCommentDetail(Number(commentId));
+  remove(@Param('id') id: string) {
+    return this.commentService.remove(+id);
   }
 }

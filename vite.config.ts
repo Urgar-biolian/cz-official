@@ -20,9 +20,9 @@ export default defineConfig({
   // 定义环境变量
   define: {
     'import.meta.env.VITE_GLOB_APP_TITLE': JSON.stringify('创智工作室'),
-    'import.meta.env.VITE_GLOB_API_URL': JSON.stringify('http://localhost:3000'),
+    'import.meta.env.VITE_GLOB_API_URL': JSON.stringify('http://localhost:3001'),
     'import.meta.env.VITE_GLOB_API_URL_PREFIX': JSON.stringify('/api'),
-    'import.meta.env.VITE_GLOB_UPLOAD_URL': JSON.stringify('http://localhost:3000'),
+    'import.meta.env.VITE_GLOB_UPLOAD_URL': JSON.stringify('http://localhost:3001'),
   },
 
   // 开发服务器配置
@@ -32,7 +32,7 @@ export default defineConfig({
     // API代理配置
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')

@@ -12,7 +12,7 @@ import axios from 'axios';
 // const request = axios.create({
 //   baseURL: 'http://localhost:3001',
 // })
-const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_GLOB_API_URL || 'http://localhost:3001';
 // 获取评论列表（增加帖子ID参数）
 export const getComments = async (postId: number, params?: {
   parent_id?: number | null;

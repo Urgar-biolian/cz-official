@@ -11,16 +11,16 @@ async function checkUsers() {
         email: true
       }
     });
-    
+
     console.log('Users in database:');
     users.forEach(user => {
       console.log(`ID: ${user.userId}, Username: ${user.username}, Email: ${user.email}`);
     });
-    
+
     if (users.length === 0) {
       console.log('No users found in database');
     }
-    
+
   } catch (error) {
     console.error('Error querying users:', error);
   } finally {
