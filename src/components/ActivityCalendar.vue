@@ -1,9 +1,5 @@
 <template>
   <div>
-    <button class="openCalen" @click="showCalen">
-      <CarryOutOutlined />
-    </button>
-
     <a-modal
       v-model:open="open"
       title="创智实验室活动日历"
@@ -81,7 +77,7 @@
 </template>
 
 <script setup lang='ts'>
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { CarryOutOutlined } from '@ant-design/icons-vue';
 import dayjs, { Dayjs } from 'dayjs';
 import { getActivitiesApi } from '~/api/activity';
@@ -197,6 +193,12 @@ const getActivityStatusType = (status: number): 'success' | 'warning' | 'error' 
   }
 };
 
+// 事件监听器函数
+const handleShowCalendar = () => {
+  console.log('收到显示日历事件');
+  showCalen();
+};
+
 onMounted(async () => {
   await fetchActivities();
   // 可以添加重试机制
@@ -204,14 +206,21 @@ onMounted(async () => {
     console.log('尝试重新获取活动数据');
     await fetchActivities();
   }
+  
+  // 监听来自header的显示日历事件
+  window.addEventListener('showCalendar', handleShowCalendar);
+  console.log('日历事件监听器已添加');
+});
+
+// 清理事件监听器
+onUnmounted(() => {
+  window.removeEventListener('showCalendar', handleShowCalendar);
+  console.log('日历事件监听器已移除');
 });
 </script>
 
 <style lang="scss" scoped>
-.openCalen {
-  margin-bottom: 1vh;
-  margin-right: 2vh;
-}
+
 
 .events {
   list-style: none;

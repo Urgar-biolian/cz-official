@@ -18,6 +18,9 @@
               i-ri:share-box-fill text-4 ml-1>
             </div></a>
         </div>
+        <button icon-btn @click="showDesktopCalendar">
+          <div i-carbon-calendar w-8 mr-3 />
+        </button>
         <button icon-btn @click="toggleDark()">
           <div i-carbon-sun dark:i-carbon-moon w-8 mr-3 />
         </button>
@@ -104,6 +107,7 @@ import { useDeviceType } from '~/hooks/useDeviceType';
 import { useUserStore } from '~/store/user';
 import CZAvatar from '../CZAvatar.vue';
 import { toggleDark } from '~/composables/dark';
+import { CarryOutOutlined } from '@ant-design/icons-vue';
 
 const route = useRoute();
 
@@ -147,6 +151,19 @@ const router = useRouter();
 const handleLogout = () => {
   userStore.logout();
   router.go(0);
+};
+
+// 显示移动端日历
+const showMobileCalendar = () => {
+  // 触发全局事件来显示日历
+  window.dispatchEvent(new CustomEvent('showCalendar'));
+  closeMenu();
+};
+
+// 显示桌面端日历
+const showDesktopCalendar = () => {
+  // 触发全局事件来显示日历
+  window.dispatchEvent(new CustomEvent('showCalendar'));
 };
 
 

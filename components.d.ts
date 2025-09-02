@@ -7,7 +7,9 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ACalendar: typeof import('ant-design-vue/es')['Calendar']
     ActivityCalendar: typeof import('./src/components/ActivityCalendar.vue')['default']
+    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     Badge: typeof import('./src/components/Badge.vue')['default']
     CZAvatar: typeof import('./src/components/CZAvatar.vue')['default']
     Footer: typeof import('./src/components/layout/footer.vue')['default']

@@ -251,12 +251,13 @@ const transform: AxiosTransform = {
   requestCatchHook: (e: Error, options: RequestOptions): Promise<any> => {
     const { notification } = useMessage();
 
-    const msgObj = ((e as AxiosError).response?.data as Result).messages;
+    const responseData = (e as AxiosError).response?.data as Result;
+    const msgObj = responseData?.messages || '网络连接错误';
 
 
       notification.error({
         message: '错误！',
-        description: JSON.stringify(msgObj),
+        description: typeof msgObj === 'string' ? msgObj : JSON.stringify(msgObj),
         duration: 3,
       });
     return Promise.reject(e);
@@ -315,7 +316,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
 }
 export const defHttp = createAxios({
   requestOptions: {
-    apiUrl: 'http://localhost:3000',
+    apiUrl: 'http://localhost:3001',
     urlPrefix: '/api',
   }
 });

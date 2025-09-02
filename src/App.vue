@@ -10,17 +10,17 @@
     </RouterView>
     <Footer />
     <MobileActivityCalendar />
+    <ActivityCalendar />
     <div class="bg pointer-events-none fixed inset-0 z-[-1] select-none bg-top bg-repeat"></div>
-    <!-- <CommentSection
-       :current-user="currentUser" 
-        :initial-comments="comments" 
-      /> -->
 
   </main>
 </template>
 <script setup lang="ts">
+import { computed } from 'vue';
 import { usePageStore } from "./store/page";
+import { useUserStore } from "./store/user";
 import MobileActivityCalendar from "./components/MobileActivityCalendar.vue";
+import ActivityCalendar from "./components/ActivityCalendar.vue";
 
 const pageStore = usePageStore();
 const isRouterActive = pageStore.isRouterActive;

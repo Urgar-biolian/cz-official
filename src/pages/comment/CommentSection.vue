@@ -68,8 +68,8 @@ const {
   error              // 错误信息
 } = storeToRefs(commentStore);
 
-// 直接获取评论列表，不使用 storeToRefs
-const comments = computed(() => commentStore.comments);
+// 直接获取评论列表，不使用 storeToRefs，确保总是返回数组
+const comments = computed(() => commentStore.comments || []);
 
 const {
   loadComments,      // 加载评论
@@ -89,9 +89,10 @@ const showCommentForm = ref(false);
 const replyTargetId = ref<number | null>(null);
 
 // 只显示父级评论
-const parentComments = computed(() =>
-  comments.value.filter(c => !c.parentId && !c.isDeleted)
-);
+const parentComments = computed(() => {
+  const commentsArray = comments.value || [];
+  return commentsArray.filter(c => !c.parentId && !c.isDeleted);
+});
 
 // 组件挂载时加载评论
 onMounted(async () => {
