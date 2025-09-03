@@ -2,7 +2,7 @@
   <div class="comment-section">
     <!-- 评论标题（显示评论数量） -->
     <div class="comment-header" v-if="!showCommentForm">
-      <h2>评论 ({{ comments.length }})</h2>
+      <h2>评论 ({{ Array.isArray(comments) ? comments.length : 0 }})</h2>
       <button @click="showCommentForm = true" class="add-comment-btn">
         <i class="icon-edit"></i> 发表评论
       </button>
@@ -16,7 +16,7 @@
 
     <template v-if="!showCommentForm">
       <!-- 加载状态 -->
-      <div v-if="isLoading && comments.length === 0" class="loading-container">
+      <div v-if="isLoading && (!Array.isArray(comments) || comments.length === 0)" class="loading-container">
         <Spin />
         <p>加载评论中...</p>
       </div>
@@ -90,7 +90,12 @@ const replyTargetId = ref<number | null>(null);
 
 // 只显示父级评论
 const parentComments = computed(() => {
-  const commentsArray = comments.value || [];
+  const commentsArray = comments.value;
+  // 确保 commentsArray 是数组
+  if (!Array.isArray(commentsArray)) {
+    console.warn('comments.value 不是数组:', commentsArray);
+    return [];
+  }
   return commentsArray.filter(c => !c.parentId && !c.isDeleted);
 });
 

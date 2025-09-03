@@ -44,12 +44,21 @@ export const useCommentStore = defineStore('comments', {
           include_deleted: false
         });
         console.log('API返回的评论数据:', data);
-        this.comments = data as MainComment[];
+        
+        // 确保 data 是数组
+        if (Array.isArray(data)) {
+          this.comments = data as MainComment[];
+        } else {
+          console.warn('API返回的数据不是数组，使用空数组:', data);
+          this.comments = [];
+        }
+        
         console.log('Store中的评论数量:', this.comments.length);
         console.log('Store中的评论数据:', this.comments);
       } catch (error) {
         console.error('加载评论失败:', error);
         this.error = '加载评论失败';
+        this.comments = []; // 确保在错误情况下也是数组
         throw error;
       } finally {
         this.isLoading = false;
