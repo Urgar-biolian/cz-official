@@ -77,7 +77,7 @@
           <CarryOutOutlined class="ml-2" />
         </div>
 
-        <a class="item" href="http://1.92.82.236:5173/" target="_blank" border-b flex items-center cursor-pointer h-12
+        <a class="item" :href="`${envConfig.VITE_GLOB_DOCS_URL}/docs/`" target="_blank" border-b flex items-center cursor-pointer h-12
           pl-8>文档
           <div inline-block i-ri:share-box-fill text-4 ml-1 text-gray-7>
           </div>
@@ -108,8 +108,10 @@ import { useUserStore } from '~/store/user';
 import CZAvatar from '../CZAvatar.vue';
 import { toggleDark } from '~/composables/dark';
 import { CarryOutOutlined } from '@ant-design/icons-vue';
+import { getAppEnvConfig } from '@/utils/env';
 
 const route = useRoute();
+const envConfig = getAppEnvConfig();
 
 const isHeaderHidden = ref(false);
 let lastScrollPosition = 0;

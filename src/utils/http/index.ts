@@ -314,9 +314,11 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
     ),
   );
 }
+const { VITE_GLOB_API_URL } = getAppEnvConfig();
+
 export const defHttp = createAxios({
   requestOptions: {
-    apiUrl: 'http://localhost:3001',
+    apiUrl: VITE_GLOB_API_URL || 'https://cz-official1.com',
     urlPrefix: '/api',
   }
 });
