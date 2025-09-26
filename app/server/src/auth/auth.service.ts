@@ -17,15 +17,22 @@ export class AuthService {
   ) { }
 
   async getUserInfo(userId) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        userId: Number(userId)
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          userId: Number(userId)
+        }
+      })
+      if (!user) {
+        throw new BadRequestException(`User with ID ${userId} not found`);
       }
-    })
-    if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
+      return await this.serializeUser(user);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException(`Failed to get user info: ${error.message}`);
     }
-    return await this.serializeUser(user);
   }
 
   async setUserRole(userId, role) {

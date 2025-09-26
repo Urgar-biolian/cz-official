@@ -49,10 +49,25 @@ function handleClick() {
 }
 
 onMounted(async () => {
-  userInfo.value = await getUserInfoById(String(props.userId));
-  const img = document.createElement('img');
-  loadImage(userInfo.value.avatar, (u) => showAvatar.value = u);
-
+  try {
+    userInfo.value = await getUserInfoById(String(props.userId));
+    const img = document.createElement('img');
+    loadImage(userInfo.value.avatar, (u) => showAvatar.value = u);
+  } catch (error) {
+    // 如果用户ID不存在，使用默认用户信息和头像
+    console.warn(`User with ID ${props.userId} not found, using default avatar`);
+    userInfo.value = {
+      createdAt: '',
+      email: '',
+      grade: 0,
+      major: '',
+      role: '',
+      score: '',
+      userId: String(props.userId),
+      username: '未知用户',
+    };
+    showAvatar.value = DefaultAvatar;
+  }
 })
 
 

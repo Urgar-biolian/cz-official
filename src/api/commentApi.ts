@@ -1,6 +1,6 @@
 // commentApi.ts (前端)，axios实例封装,用于与后端API交互
 import { CreateCommentDTO, MainComment } from '~/types/comment';
-import axios from 'axios';
+import { defHttp } from '~/utils/http';
 // import pool from './pool'; // 导入连接池实例
 //params-》参数
 ///api/comments 是前端应用向后端服务器发送请求的 API 端点路径，用于获取或提交评论数据。
@@ -12,7 +12,6 @@ import axios from 'axios';
 // const request = axios.create({
 //   baseURL: 'http://localhost:3001',
 // })
-const API_URL = import.meta.env.VITE_GLOB_API_URL || 'https://cz-official1.com';
 // 获取评论列表（增加帖子ID参数）
 export const getComments = async (postId: number, params?: {
   parent_id?: number | null;
@@ -20,7 +19,8 @@ export const getComments = async (postId: number, params?: {
 }): Promise<MainComment[]> => {
   try {
     console.log('发送获取评论请求，参数:', params);
-    const { data } = await axios.get(`${API_URL}/api/comments`, {
+    const data = await defHttp.get({
+      url: '/comments',
       params
     });
     console.log('API 原始返回数据:', data);
@@ -41,7 +41,9 @@ export const getComments = async (postId: number, params?: {
 // 获取单个评论详情
 export const getCommentById = async (commentId: number): Promise<MainComment> => {
   try {
-    const { data } = await axios.get(`${API_URL}/api/comments/${commentId}`);
+    const data = await defHttp.get({
+      url: `/comments/${commentId}`
+    });
     return data as MainComment;
   } catch (error) {
     console.error('获取评论详情失败:', error);
@@ -56,14 +58,14 @@ export const saveComment = async (commentData: CreateCommentDTO) => {
     const requestData = {
       content: commentData.content,
       userId: commentData.user_id,
-      parentId: commentData.parent_id || null,
-      rootParentId: commentData.root_parent_id || null
+      parentId: commentData.parent_id || null
     };
 
     console.log('发送评论数据:', requestData);
 
-    const { data } = await axios.post(`${API_URL}/api/comments`, requestData, {
-      headers: { 'Content-Type': 'application/json' },
+    const data = await defHttp.post({
+      url: '/comments',
+      data: requestData
     });
     return data as MainComment;
   } catch (error) {
@@ -75,7 +77,9 @@ export const saveComment = async (commentData: CreateCommentDTO) => {
 // 删除评论
 export const deleteComment = async (commentId: number) => {
   try {
-    await axios.delete(`${API_URL}/api/comments/${commentId}`);
+    await defHttp.delete({
+      url: `/comments/${commentId}`
+    });
   } catch (error) {
     console.error('删除评论失败:', error);
     throw error;
@@ -88,7 +92,10 @@ export const updateComment = async (
   updatedData: Partial<MainComment>
 ) => {
   try {
-    const { data } = await axios.patch(`${API_URL}/api/comments/${commentId}`, updatedData);
+    const data = await defHttp.patch({
+      url: `/comments/${commentId}`,
+      data: updatedData
+    });
     return data as MainComment;
   } catch (error) {
     console.error('更新评论失败:', error);
@@ -99,8 +106,9 @@ export const updateComment = async (
 // 点赞评论
 export const toggleLike = async (commentId: number, userId: number) => {
   try {
-    const { data } = await axios.post(`${API_URL}/api/comments/${commentId}/like`, {
-      userId: userId
+    const data = await defHttp.post({
+      url: `/comments/${commentId}/like`,
+      data: { userId: userId }
     });
     return data;
   } catch (error) {
@@ -112,7 +120,8 @@ export const toggleLike = async (commentId: number, userId: number) => {
 // 取消点赞
 export const unlikeComment = async (commentId: number, userId: number) => {
   try {
-    const { data } = await axios.delete(`${API_URL}/api/comments/${commentId}/like`, {
+    const data = await defHttp.delete({
+      url: `/comments/${commentId}/like`,
       data: { userId: userId }
     });
     return data;
@@ -125,7 +134,9 @@ export const unlikeComment = async (commentId: number, userId: number) => {
 // 获取特定帖子的评论
 export const getCommentsByPost = async (postId: number): Promise<MainComment[]> => {
   try {
-    const { data } = await axios.get(`${API_URL}/api/comments/post/${postId}`);
+    const data = await defHttp.get({
+      url: `/comments/post/${postId}`
+    });
     return data as MainComment[];
   } catch (error) {
     console.error('获取帖子评论失败:', error);
@@ -134,7 +145,9 @@ export const getCommentsByPost = async (postId: number): Promise<MainComment[]> 
 };
 
 export const getCommentDetail = async (commentId: number) => {
-  const { data } = await axios.get(`${API_URL}/api/comments/${commentId}/detail`);
+  const data = await defHttp.get({
+    url: `/comments/${commentId}`
+  });
   // 只返回 result 字段，兼容后端返回格式
   return data.result || data.data || data;
 };

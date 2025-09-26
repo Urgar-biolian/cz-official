@@ -20,10 +20,10 @@ export default defineConfig({
   // 定义环境变量 - 从.env文件读取
   define: {
     'import.meta.env.VITE_GLOB_APP_TITLE': JSON.stringify(process.env.VITE_GLOB_APP_TITLE || '创智工作室'),
-    'import.meta.env.VITE_GLOB_API_URL': JSON.stringify(process.env.VITE_GLOB_API_URL || 'http://localhost:3001'),
+    'import.meta.env.VITE_GLOB_API_URL': JSON.stringify(process.env.VITE_GLOB_API_URL || 'http://localhost:7234'),
     'import.meta.env.VITE_GLOB_API_URL_PREFIX': JSON.stringify(process.env.VITE_GLOB_API_URL_PREFIX || 'api'),
-    'import.meta.env.VITE_GLOB_UPLOAD_URL': JSON.stringify(process.env.VITE_GLOB_UPLOAD_URL || 'http://localhost:3001'),
-    'import.meta.env.VITE_GLOB_DOCS_URL': JSON.stringify(process.env.VITE_GLOB_DOCS_URL || 'http://localhost:3001'),
+    'import.meta.env.VITE_GLOB_UPLOAD_URL': JSON.stringify(process.env.VITE_GLOB_UPLOAD_URL || 'http://localhost:7234'),
+    'import.meta.env.VITE_GLOB_DOCS_URL': JSON.stringify(process.env.VITE_GLOB_DOCS_URL || 'http://localhost:7234'),
   },
 
   // 开发服务器配置
@@ -33,7 +33,7 @@ export default defineConfig({
     // API代理配置
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'http://localhost:7234',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')

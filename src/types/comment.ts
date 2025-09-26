@@ -3,7 +3,6 @@ export interface CreateCommentDTO {
   content: string;
   user_id: number;
   parent_id?: number;
-  root_parent_id?: number;
   reply_to_user?: string;
 }
 
@@ -12,7 +11,6 @@ export interface Comment {
   content: string;
   userId: number;
   parentId?: number;
-  rootParentId?: number;
   createdAt: string;
   isDeleted: boolean;
   likeCount: number;
