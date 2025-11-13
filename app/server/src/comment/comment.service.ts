@@ -149,4 +149,21 @@ export class CommentService {
       data: comment,
     };
   }
+
+  async toggleLike(commentId: number, userId: number) {
+    const already = await this.prisma.commentLike.findUnique({
+      where: { commentId_userId: { commentId, userId } },
+    });
+    if (already) {
+      await this.prisma.commentLike.delete({
+        where: { commentId_userId: { commentId, userId } },
+      });
+      return { liked: false };
+    } else {
+      await this.prisma.commentLike.create({
+        data: { commentId, userId },
+      });
+      return { liked: true };
+    }
+  }
 }

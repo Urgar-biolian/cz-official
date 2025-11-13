@@ -159,10 +159,10 @@ onUnmounted(() => {
 });
 /*————————————————————————————————————————————————————————————————————————*/
 
-const bgVideoURL = import.meta.env.VITE_GLOB_UPLOAD_URL + 'bg.mp4';
-const fontVideoURL = import.meta.env.VITE_GLOB_UPLOAD_URL + 'font.mp4';
-const leftVideoURL = import.meta.env.VITE_GLOB_UPLOAD_URL + 'introductionleft.mp4';
-const videoURL = import.meta.env.VITE_GLOB_UPLOAD_URL + 'introduction.mp4';
+const bgVideoURL = 'http://1.92.82.236:3000/uploads/bg.mp4';
+const fontVideoURL = 'http://1.92.82.236:3000/uploads/font.mp4';
+const leftVideoURL = 'http://1.92.82.236:3000/uploads/introductionleft.mp4';
+const videoURL = 'http://1.92.82.236:3000/uploads/introduction.mp4';
 </script>
 <style lang="scss" scoped>
 .title-cn {

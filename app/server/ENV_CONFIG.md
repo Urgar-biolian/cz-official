@@ -13,7 +13,7 @@ TOKEN_SECRET="your-super-secret-jwt-token-key-here"
 
 # 端口配置
 PORT=3000
-URL=localhost
+URL=localhost  # 生产环境若需绕过 DNS，可设置为服务器 IP（例如 1.92.82.236）
 
 # Redis 配置
 REDIS_URL=redis://localhost:6379

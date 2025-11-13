@@ -25,10 +25,11 @@ export const getComments = async (postId: number, params?: {
     });
     console.log('API 原始返回数据:', data);
 
-    // 兼容各种后端返回格式
-    const comments = Array.isArray(data)
-      ? data
-      : (data.result || data.data || data.comments || []);
+    // 统一兼容解析：优先取 result，其次取原数据；再从 data/comments 中拿数组
+    const payload = (data as any)?.result ?? data;
+    const comments = Array.isArray(payload)
+      ? payload
+      : ((payload as any)?.data ?? (payload as any)?.comments ?? []);
     console.log('处理后的评论数组:', comments);
 
     return comments as MainComment[];
@@ -44,7 +45,8 @@ export const getCommentById = async (commentId: number): Promise<MainComment> =>
     const data = await defHttp.get({
       url: `/comments/${commentId}`
     });
-    return data as MainComment;
+    const payload = (data as any)?.result ?? data;
+    return payload as MainComment;
   } catch (error) {
     console.error('获取评论详情失败:', error);
     throw error;
@@ -67,7 +69,8 @@ export const saveComment = async (commentData: CreateCommentDTO) => {
       url: '/comments',
       data: requestData
     });
-    return data as MainComment;
+    const payload = (data as any)?.result ?? data;
+    return payload as MainComment;
   } catch (error) {
     console.error('提交评论失败:', error);
     throw error;
@@ -96,7 +99,8 @@ export const updateComment = async (
       url: `/comments/${commentId}`,
       data: updatedData
     });
-    return data as MainComment;
+    const payload = (data as any)?.result ?? data;
+    return payload as MainComment;
   } catch (error) {
     console.error('更新评论失败:', error);
     throw error;
@@ -110,7 +114,8 @@ export const toggleLike = async (commentId: number, userId: number) => {
       url: `/comments/${commentId}/like`,
       data: { userId: userId }
     });
-    return data;
+    const payload = (data as any)?.result ?? data;
+    return payload;
   } catch (error) {
     console.error('操作点赞失败:', error);
     throw error;
@@ -124,7 +129,8 @@ export const unlikeComment = async (commentId: number, userId: number) => {
       url: `/comments/${commentId}/like`,
       data: { userId: userId }
     });
-    return data;
+    const payload = (data as any)?.result ?? data;
+    return payload;
   } catch (error) {
     console.error('取消点赞失败:', error);
     throw error;
@@ -137,7 +143,11 @@ export const getCommentsByPost = async (postId: number): Promise<MainComment[]> 
     const data = await defHttp.get({
       url: `/comments/post/${postId}`
     });
-    return data as MainComment[];
+    const payload = (data as any)?.result ?? data;
+    const comments = Array.isArray(payload)
+      ? payload
+      : ((payload as any)?.data ?? []);
+    return comments as MainComment[];
   } catch (error) {
     console.error('获取帖子评论失败:', error);
     throw error;
@@ -148,6 +158,7 @@ export const getCommentDetail = async (commentId: number) => {
   const data = await defHttp.get({
     url: `/comments/${commentId}`
   });
-  // 只返回 result 字段，兼容后端返回格式
-  return data.result || data.data || data;
+  // 统一返回 result 或 data
+  const payload = (data as any)?.result ?? data;
+  return (payload as any)?.data ?? payload;
 };

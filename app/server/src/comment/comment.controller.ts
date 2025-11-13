@@ -57,4 +57,16 @@ export class CommentController {
   remove(@Param('id') id: string) {
     return this.commentService.remove(+id);
   }
+
+  @Auth()
+  @Post(':id/like')
+  async like(
+    @Param('id') id: string,
+    @Headers('authorization') authorization: string,
+  ) {
+    const token = authorization?.split(' ')[1];
+    const payload = this.jwtService.decode(token) as any;
+    const userId = payload.sub;
+    return this.commentService.toggleLike(+id, userId);
+  }
 }

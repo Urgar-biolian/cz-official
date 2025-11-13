@@ -17,14 +17,7 @@ import  externalGlobals  from 'rollup-plugin-external-globals';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 export default defineConfig({
-  // 定义环境变量 - 从.env文件读取
-  define: {
-    'import.meta.env.VITE_GLOB_APP_TITLE': JSON.stringify(process.env.VITE_GLOB_APP_TITLE || '创智工作室'),
-    'import.meta.env.VITE_GLOB_API_URL': JSON.stringify(process.env.VITE_GLOB_API_URL || 'http://localhost:7234'),
-    'import.meta.env.VITE_GLOB_API_URL_PREFIX': JSON.stringify(process.env.VITE_GLOB_API_URL_PREFIX || 'api'),
-    'import.meta.env.VITE_GLOB_UPLOAD_URL': JSON.stringify(process.env.VITE_GLOB_UPLOAD_URL || 'http://localhost:7234'),
-    'import.meta.env.VITE_GLOB_DOCS_URL': JSON.stringify(process.env.VITE_GLOB_DOCS_URL || 'http://localhost:7234'),
-  },
+  // 使用 Vite 内置的环境变量加载机制（.env.*），不额外覆盖
 
   // 开发服务器配置
   server: {

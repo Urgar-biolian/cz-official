@@ -65,7 +65,7 @@ const editorConfig = {
   placeholder: props.placeholder,
   MENU_CONF: {
     uploadImage: {
-      server: '/api/upload/image',
+      server: 'http://1.92.82.236:3000/api/upload/image',
       fieldName: 'file',
       // 单文件最大 2MB
       maxFileSize: 2 * 1024 * 1024,

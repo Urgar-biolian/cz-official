@@ -8,6 +8,7 @@ import { MessageModule } from './message/message.module';
 import { WinnersModule } from './winners/winners.module';
 import { CommentModule } from './comment/comment.module';
 import { ActivityModule } from './activity/activity.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ActivityModule } from './activity/activity.module';
     WinnersModule,
     CommentModule,  // 评论模块
     ActivityModule,
+    HealthModule,
   ]
 })
 export class AppModule { }

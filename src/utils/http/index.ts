@@ -317,8 +317,10 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
 const { VITE_GLOB_API_URL } = getAppEnvConfig();
 
 export const defHttp = createAxios({
+  // 全局直连后端 IP，绕过域名依赖
+  baseURL: 'http://1.92.82.236:3000',
   requestOptions: {
-    apiUrl: VITE_GLOB_API_URL || 'https://cz-official1.com',
+    apiUrl: 'http://1.92.82.236:3000',
     urlPrefix: '/api',
   }
 });
