@@ -23,7 +23,7 @@
 import { ref, computed } from 'vue'
 import { useCommentStore } from '~/store/commentStore'
 import { useUserStore } from '~/store/user'
-import { saveComment, deleteComment } from '~/api/commentApi'
+import { saveComment } from '~/api/commentApi'
 import type { CreateCommentDTO } from '~/types/comment'
 import TextEditor from '~/views/TextEditor.vue'
 
@@ -51,7 +51,6 @@ const isReply = computed(() => !!props.parentId)
 const submitComment = async () => {
   if (!commentContent.value.trim()) return
 
-  // 获取当前用户信息
   const currentUser = userStore.getUserInfo
   if (!currentUser || !('userId' in currentUser)) {
     alert('请先登录')
@@ -63,29 +62,14 @@ const submitComment = async () => {
   try {
     const commentData: CreateCommentDTO = {
       content: commentContent.value.trim(),
-      user_id: parseInt(currentUser.userId),
       parent_id: props.parentId,
-      root_parent_id: props.rootParentId,
-      reply_to_user: props.replyToUser
     }
 
-    console.log('提交内容:', commentContent.value);
-    console.log('提交评论数据:', commentData)
-
     const newComment = await saveComment(commentData)
-
-    // 添加到store
     commentStore.addComment(newComment)
-
-    // 清空表单
     commentContent.value = ''
-
-    // 通知父组件
     emit('submitted', newComment)
-
-    console.log('评论提交成功:', newComment)
   } catch (error) {
-    console.error('提交评论失败:', error)
     alert('提交失败，请重试')
   } finally {
     isSubmitting.value = false

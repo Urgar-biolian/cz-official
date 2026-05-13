@@ -1,9 +1,19 @@
 // 评论相关类型定义
 export interface CreateCommentDTO {
   content: string;
-  user_id: number;
   parent_id?: number;
-  reply_to_user?: string;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface PaginatedCommentResult {
+  result: MainComment[];
+  meta: PaginationMeta;
 }
 
 export interface Comment {

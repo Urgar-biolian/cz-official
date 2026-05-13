@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container dark:bg-[#121212] dark:text-gray-200" w-full h-full>
     <div class="form-container" pt-10 w-full flex>
       <a-form
         :model="formState"
@@ -15,29 +15,31 @@
           name="email"
           :rules="[{ required: true, message: '请输入注册邮箱!' }, { type: 'email', message: '邮箱格式不正确' }]"
           validate-trigger="onChange"
+          class="dark:text-gray-200"
         >
           <a-input v-model:value="formState.email" />
         </a-form-item>
 
-        <a-form-item label="验证码" name="code" :rules="[{ required: true, message: '请输入验证码!' }]">
+        <a-form-item label="验证码" name="code" :rules="[{ required: true, message: '请输入验证码!' }]" class="dark:text-gray-200">
           <div class="flex gap-2">
             <a-input v-model:value="formState.code" />
             <a-button
               :loading="sending"
               @click="sendVerificationCode"
               :disabled="countdown > 0"
+              class="dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600"
             >
               {{ countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
             </a-button>
           </div>
         </a-form-item>
 
-        <a-form-item label="新密码" name="newPassword" :rules="[{ required: true, message: '请输入新密码!' }]">
+        <a-form-item label="新密码" name="newPassword" :rules="[{ required: true, message: '请输入新密码!' }]" class="dark:text-gray-200">
           <a-input-password v-model:value="formState.newPassword" />
         </a-form-item>
 
         <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-          <a-button type="primary" html-type="submit" color="black" :loading="loading">重置密码</a-button>
+          <a-button type="default" html-type="submit" class="dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600" :loading="loading">重置密码</a-button>
         </a-form-item>
       </a-form>
     </div>

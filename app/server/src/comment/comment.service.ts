@@ -7,48 +7,66 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 export class CommentService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(includeDeleted = false) {
-    const comments = await this.prisma.comment.findMany({
-      where: includeDeleted ? {} : { deletedAt: null },
-      include: {
-        user: {
-          select: {
-            userId: true,
-            username: true,
-            avatar: true,
-          },
+  async findAll(page = 1, pageSize = 10, includeDeleted = false) {
+    const normalizedPage = Math.max(1, page);
+    const normalizedPageSize = Math.min(Math.max(1, pageSize), 50);
+    const skip = (normalizedPage - 1) * normalizedPageSize;
+    const where = includeDeleted ? {} : { deletedAt: null };
+
+    const [comments, total] = await Promise.all([
+      this.prisma.comment.findMany({
+        skip,
+        take: normalizedPageSize,
+        where: {
+          ...where,
+          parentId: null,
         },
-        parent: {
-          include: {
-            user: {
-              select: {
-                userId: true,
-                username: true,
-                avatar: true,
+        include: {
+          user: {
+            select: {
+              userId: true,
+              username: true,
+              avatar: true,
+            },
+          },
+          replies: {
+            where: includeDeleted ? {} : { deletedAt: null },
+            include: {
+              user: {
+                select: {
+                  userId: true,
+                  username: true,
+                  avatar: true,
+                },
+              },
+              parent: {
+                include: {
+                  user: {
+                    select: {
+                      userId: true,
+                      username: true,
+                    },
+                  },
+                },
               },
             },
           },
         },
-        replies: {
-          where: { deletedAt: null },
-          include: {
-            user: {
-              select: {
-                userId: true,
-                username: true,
-                avatar: true,
-              },
-            },
-          },
+        orderBy: {
+          createdAt: 'desc',
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+      }),
+      this.prisma.comment.count({ where: { ...where, parentId: null } }),
+    ]);
 
     return {
       data: comments,
+      meta: {
+        total,
+        page: normalizedPage,
+        pageSize: normalizedPageSize,
+        totalPages: Math.ceil(total / normalizedPageSize),
+      },
     };
   }
 

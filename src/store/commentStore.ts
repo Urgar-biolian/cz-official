@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { saveComment, getComments, deleteComment, updateComment, toggleLike } from '~/api/commentApi';
 import type { CreateCommentDTO, MainComment } from "~/types/comment";
 import { useUserStore } from '~/store/user';
-import axios from "axios";
 import type { UserInfo } from '#/data';
 
 function isUserInfo(obj: any): obj is UserInfo {
@@ -39,26 +38,13 @@ export const useCommentStore = defineStore('comments', {
       this.isLoading = true;
       this.error = null;
       try {
-        console.log('开始加载评论...');
-        const data = await getComments(1, {
-          include_deleted: false
+        const { result } = await getComments({
+          include_deleted: false,
         });
-        console.log('API返回的评论数据:', data);
-        
-        // 确保 data 是数组
-        if (Array.isArray(data)) {
-          this.comments = data as MainComment[];
-        } else {
-          console.warn('API返回的数据不是数组，使用空数组:', data);
-          this.comments = [];
-        }
-        
-        console.log('Store中的评论数量:', this.comments.length);
-        console.log('Store中的评论数据:', this.comments);
+        this.comments = Array.isArray(result) ? result : [];
       } catch (error) {
-        console.error('加载评论失败:', error);
         this.error = '加载评论失败';
-        this.comments = []; // 确保在错误情况下也是数组
+        this.comments = [];
         throw error;
       } finally {
         this.isLoading = false;
@@ -82,8 +68,6 @@ export const useCommentStore = defineStore('comments', {
 
       const commentData: CreateCommentDTO = {
         content,
-        //  post_id: this.currentPostId,
-        user_id: parseInt(userInfo.userId),
         parent_id: this.replyTarget || undefined,
       };
 
@@ -92,7 +76,7 @@ export const useCommentStore = defineStore('comments', {
       try {
         await saveComment(commentData);
         this.replyTarget = null;
-        await this.loadComments(); // 刷新列表
+        await this.loadComments();
       } catch (error) {
         this.error = '提交评论失败';
         throw error;
@@ -106,9 +90,7 @@ export const useCommentStore = defineStore('comments', {
       this.error = null;
       try {
         await deleteComment(commentId);
-        // 立即从本地移除，无需刷新页面
         this.comments = this.comments.filter(c => c.id !== commentId && c.parentId !== commentId);
-        // 递归移除所有后代
         let removed = true;
         while (removed) {
           removed = false;
@@ -119,7 +101,6 @@ export const useCommentStore = defineStore('comments', {
             removed = true;
           }
         }
-        // 重新组装树
         this.comments = buildCommentTree(this.comments);
       } catch (error) {
         this.error = '删除评论失败';
@@ -129,12 +110,8 @@ export const useCommentStore = defineStore('comments', {
 
     // 递归移除评论及其所有子评论
     removeCommentById(commentId: number) {
-      // 先移除主评论
       this.comments = this.comments.filter(c => c.id !== commentId);
-      // 再递归移除所有子评论
       this.comments = this.comments.filter(c => c.parentId !== commentId);
-      // 如果有多级嵌套，可以递归调用
-      // 也可以用 while 循环递归移除所有后代
       let removed = true;
       while (removed) {
         removed = false;
@@ -152,7 +129,7 @@ export const useCommentStore = defineStore('comments', {
       this.error = null;
       try {
         await updateComment(comment.id!, { content: comment.content });
-        await this.loadComments(); // 刷新列表
+        await this.loadComments();
       } catch (error) {
         this.error = '更新评论失败';
         throw error;
@@ -169,8 +146,8 @@ export const useCommentStore = defineStore('comments', {
         throw new Error('未登录');
       }
       try {
-        await toggleLike(commentId, parseInt(userInfo.userId));
-        await this.loadComments(); // 刷新列表
+        await toggleLike(commentId);
+        await this.loadComments();
       } catch (error) {
         this.error = '点赞失败';
         throw error;

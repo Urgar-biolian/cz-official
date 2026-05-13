@@ -35,7 +35,7 @@ enum Api {
 export function getMsgApi(
   mode: ErrorMessageMode = "modal",
 ) {
-  return defHttp.get<MessageResultModel>(
+  return defHttp.get<MessageResultModel[]>(
     {
       url: Api.GetAll,
     },
@@ -87,8 +87,4 @@ export function removeMsgApi(
     {
       errorMessageMode: "none",
     });
-}
-
-export function getWinners() {
-  return defHttp.get<WinnerInfo[]>({ url: '/winners' });
 }

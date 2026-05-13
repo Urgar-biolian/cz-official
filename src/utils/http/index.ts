@@ -17,7 +17,6 @@ import { AxiosRetry } from "./axiosRetry";
 import axios from "axios";
 import { useGlobSetting } from "./../../hooks/setting/useGlobSetting";
 import { useUserStore } from "~/store/user";
-import { getAppEnvConfig } from "../env";
 
 
 
@@ -55,7 +54,7 @@ const transform: AxiosTransform = {
       throw new Error('[HTTP] Request has no return value');
     }
     //  这里 code，result，messages为 后台统一的字段
-    const { code, result, messages } = data;
+    const { code, result, messages, meta } = data;
     const message = typeof messages === "string" ? messages : (messages as any)[Object.keys(messages)[0]];
 
     // 这里逻辑可以根据项目进行修改
@@ -80,7 +79,7 @@ const transform: AxiosTransform = {
       } else if (options.successMessageMode === "message") {
         createMessage.success(successMsg);
       }
-      return result;
+      return meta ? { result, meta } : result;
     }
 
     // 在此处根据自己项目的实际情况对不同的code执行不同的操作
@@ -314,13 +313,4 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
     ),
   );
 }
-const { VITE_GLOB_API_URL } = getAppEnvConfig();
-
-export const defHttp = createAxios({
-  // 全局直连后端 IP，绕过域名依赖
-  baseURL: 'http://1.92.82.236:3000',
-  requestOptions: {
-    apiUrl: 'http://1.92.82.236:3000',
-    urlPrefix: '/api',
-  }
-});
+export const defHttp = createAxios();
