@@ -35,14 +35,14 @@
           @click="handleLike"
         >
           <svg viewBox="0 0 24 24" width="20" height="20">
-            <path :fill="isLiked ? '#ff4d4f' : '#bbb'"
+            <path :fill="isLiked ? '#ff4d4f' : '#8f959e'"
               d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
           <span class="like-count">{{ comment.likeCount }}</span>
         </button>
         <span class="reply-count">
           <svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align: middle;">
-            <path fill="#bbb" d="M10 9V5l-7 7 7 7v-4.1c4.55 0 7.72 1.95 9.72 6.1-1.43-5.72-5.19-10-9.72-10z" />
+            <path fill="#8f959e" d="M10 9V5l-7 7 7 7v-4.1c4.55 0 7.72 1.95 9.72 6.1-1.43-5.72-5.19-10-9.72-10z" />
           </svg>
           {{ comment.replyCount || (comment.replies ? comment.replies.length : 0) }} 回复
         </span>
@@ -185,32 +185,36 @@ const topRankClass = computed(() => {
 </script>
 <style scoped>
 .comment-item {
-  margin-bottom: 24px;
-  padding: 20px 24px;
-  border-radius: 12px;
-  background-color: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f0f0;
-  transition: box-shadow 0.2s;
+  padding: 16px;
+  border-radius: 6px;
+  @apply bg-white dark:bg-[#0d1117];
+  border: 1px solid rgba(27, 31, 36, 0.15);
+  @apply dark:border-gray-700;
+  transition: all 0.2s ease;
   position: relative;
 }
 
-.comment-item+.comment-item {
-  border-top: 2px solid #e6e6e6;
-  margin-top: 32px;
-  padding-top: 32px;
+.comment-item:hover {
+  @apply border-gray-300 dark:border-gray-600;
 }
 
 :deep(.comment-item:not(.is-reply)) {
-  background-color: #fff;
+  @apply bg-white dark:bg-[#0d1117];
 }
 
 .is-reply {
-  background-color: #f7f9fa;
-  margin-left: 36px;
-  border-left: 3px solid #e6e6e6;
-  box-shadow: none;
-  border: 1px solid #f0f0f0;
+  @apply bg-transparent dark:bg-transparent;
+  margin-left: 32px;
+  margin-top: 16px;
+  padding: 16px 0 0 0;
+  border: none;
+  border-top: 1px solid rgba(27, 31, 36, 0.15);
+  @apply dark:border-gray-700;
+  border-radius: 0;
+}
+
+.is-reply:hover {
+  @apply bg-transparent border-t border-gray-200 dark:border-gray-700;
 }
 
 .comment-header {
@@ -220,33 +224,34 @@ const topRankClass = computed(() => {
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  margin-right: 12px;
+  margin-right: 8px;
   object-fit: cover;
-  border: 1.5px solid #e6e6e6;
+  @apply border border-gray-200 dark:border-gray-700;
 }
 
 .author-name {
-  font-weight: bold;
-  margin-right: 10px;
-  color: #222;
-  font-size: 16px;
+  font-weight: 600;
+  margin-right: 8px;
+  @apply text-gray-900 dark:text-white;
+  font-size: 14px;
 }
 
 .comment-date {
-  font-size: 0.9em;
-  color: #888;
+  font-size: 12px;
+  @apply text-gray-500 dark:text-gray-400;
 }
 
 .comment-content {
   display: block;
-  line-height: 1.7;
-  font-size: 15px;
-  color: #333;
+  line-height: 1.5;
+  font-size: 14px;
+  @apply text-gray-900 dark:text-gray-100;
   word-break: break-word;
   text-align: left;
+  margin-left: 36px; /* Align with text, not avatar */
 }
 
 .comment-content.comment-ellipsis {
@@ -261,56 +266,51 @@ const topRankClass = computed(() => {
 .reply-btn {
   background: none;
   border: none;
-  color: #1890ff;
+  @apply text-gray-500 dark:text-gray-400;
   cursor: pointer;
-  padding: 4px 10px;
-  font-size: 0.95em;
-  border-radius: 6px;
-  transition: background 0.2s, color 0.2s;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
-
-.reply-btn:hover {
-  background: #e6f7ff;
-  color: #096dd9;
+.action-btn:hover {
+  color: #138AFA;
 }
 
 .reply-form {
-  margin-top: 10px;
+  margin-top: 16px;
+  margin-left: 36px;
 }
 
 .replies {
-  margin-top: 18px;
-  border-left: 2px solid #e6e6e6;
-  padding-left: 18px;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .reply-item {
-  margin-top: 10px;
+  margin-top: 0;
 }
 
 .comment-actions {
-  margin-top: 12px;
+  margin-top: 8px;
+  margin-left: 36px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
 }
 
 .edit-btn,
 .delete-btn {
   background: none;
   border: none;
-  color: #888;
+  @apply text-gray-500 dark:text-gray-400 hover:text-red-500;
   cursor: pointer;
-  padding: 4px 10px;
-  font-size: 0.95em;
-  border-radius: 6px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.edit-btn:hover,
-.delete-btn:hover {
-  background: #f5f5f5;
-  color: #d4380d;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .like-btn {
@@ -318,35 +318,32 @@ const topRankClass = computed(() => {
   border: none;
   display: flex;
   align-items: center;
+  gap: 4px;
   cursor: pointer;
   transition: color 0.2s;
-  padding: 0 4px;
+  padding: 0;
+  @apply text-gray-500 dark:text-gray-400;
+}
+.action-btn:hover {
+  color: #138AFA;
 }
 
 .like-btn.liked svg path {
-  fill: #ff4d4f;
+  fill: #ef4444;
 }
 
 .like-count {
-  margin-left: 4px;
-  font-size: 15px;
-  color: #bbb;
+  font-size: 12px;
+  font-weight: 500;
   transition: color 0.2s;
 }
 
 .like-btn.liked .like-count {
-  color: #ff4d4f;
+  @apply text-red-500;
 }
 
 .reply-count {
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-  color: #888;
-  background: #f5f5f5;
-  border-radius: 10px;
-  padding: 2px 8px;
-  margin-left: 4px;
+  display: none; /* Hide in GitHub style, it's visually implied by the replies thread */
 }
 
 .top-rank-badge {
@@ -354,20 +351,19 @@ const topRankClass = computed(() => {
   left: -12px;
   top: 12px;
   font-weight: bold;
-  font-size: 15px;
-  padding: 2px 10px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #ffd700 0%, #fffbe6 100%);
-  color: #b8860b;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #ffd700 0%, #b8860b 100%);
+  color: #fff;
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
 }
-.comment-item.top1 { border: 2px solid #ffd700; }
-.comment-item.top2 { border: 2px solid #c0c0c0; }
-.comment-item.top3 { border: 2px solid #cd7f32; }
+.comment-item.top1 { @apply border-yellow-400; }
+.comment-item.top2 { @apply border-gray-400; }
+.comment-item.top3 { @apply border-orange-400; }
 
 .comment-detail {
   position: relative;
-  /* 其它样式不变 */
 }
 </style>
