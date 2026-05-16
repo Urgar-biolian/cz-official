@@ -1,7 +1,13 @@
 // 评论相关类型定义
 export interface CreateCommentDTO {
+  title?: string;
+  category?: string;
+  tags?: string[];
   content: string;
   parent_id?: number;
+  quote_id?: number;
+  isPinned?: boolean;
+  isFeatured?: boolean;
 }
 
 export interface PaginationMeta {
@@ -9,6 +15,8 @@ export interface PaginationMeta {
   page: number;
   pageSize: number;
   totalPages: number;
+  sort?: 'latest' | 'top';
+  category?: string;
 }
 
 export interface PaginatedCommentResult {
@@ -18,11 +26,17 @@ export interface PaginatedCommentResult {
 
 export interface Comment {
   id: number;
+  title?: string | null;
+  category?: string | null;
+  tags?: string[];
   content: string;
   userId: number;
   parentId?: number;
+  quoteId?: number | null;
   createdAt: string;
   isDeleted: boolean;
+  isPinned?: boolean;
+  isFeatured?: boolean;
   likeCount: number;
   replyCount: number;
   attachmentCount: number;
@@ -31,6 +45,17 @@ export interface Comment {
     username: string;
     avatar?: string;
     role?: string;
+    badge?: string;
+    score?: number;
+  };
+  quote?: {
+    id: number;
+    content: string;
+    userId: number;
+    user?: {
+      username: string;
+      avatar?: string;
+    };
   };
   replies?: Comment[];
   likes?: CommentLike[];

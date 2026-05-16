@@ -64,11 +64,17 @@ export default defineConfig({
     VueMacros({
       defineOptions: false,
       defineModels: false,
+      chainCall: false,
       plugins: {
         vue: Vue({
           script: {
             propsDestructure: true,
             defineModel: true,
+          },
+          template: {
+            compilerOptions: {
+              isCustomElement: tag => tag.startsWith('Tres') && tag !== 'TresCanvas',
+            },
           },
         }),
         vueJsx:vueJsx({})

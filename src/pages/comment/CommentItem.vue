@@ -1,94 +1,129 @@
-<!-- 评论区部分 -->
 <template>
-  <div class="comment-item" :class="[{ 'is-reply': isReplyComment }, topRankClass]">
-    <div v-if="rank && rank <= 3" class="top-rank-badge">
-      <span v-if="rank === 1">🥇</span>
-      <span v-else-if="rank === 2">🥈</span>
-      <span v-else-if="rank === 3">🥉</span>
-      TOP{{ rank }}
-    </div>
-    <div v-if="!showReplyForm">
-      <!-- 评论头部和内容 -->
-      <div class="comment-header">
-        <img
-          :src="avatarUrl"
-          class="avatar"
-          :alt="comment.user?.username || '未知用户'"
-        />
-        <span class="author-name">{{ comment.user?.username || '未知用户' }}</span>
-        <span class="comment-date">
-          {{ comment.createdAt ? formatDate(new Date(comment.createdAt)) : '未知时间' }}
+  <article class="floor-card" :class="{ 'is-reply': isReplyComment, 'is-thread': !isReplyComment }">
+    <div v-if="!showReplyForm" class="floor-layout">
+      <aside class="floor-aside">
+        <div class="floor-mark">{{ floorMark }}</div>
+        <img :src="avatarUrl" class="avatar" :alt="comment.user?.username || '未知用户'">
+        <span class="author-role" :class="{ admin: isAdmin, author: isThreadAuthor }">
+          {{ roleLabel }}
         </span>
-      </div>
-      <div
-        class="comment-content"
-        :class="{ 'comment-ellipsis': !props.fullContent }"
-        @click="goToDetail"
-        style="cursor:pointer;text-align:left;"
-      >
-        <div v-html="safeContent"></div>
-      </div>
-      <div class="comment-actions">
-        <button
-          class="like-btn"
-          :class="{ liked: isLiked }"
-          @click="handleLike"
+      </aside>
+
+      <div class="floor-body">
+        <div class="floor-header">
+          <div class="floor-author-block">
+            <div class="floor-author-line">
+              <strong class="author-name">{{ comment.user?.username || '未知用户' }}</strong>
+              <span v-if="comment.user?.badge" class="author-custom-badge">{{ comment.user.badge }}</span>
+              <span class="author-level">Lv.{{ Math.floor((comment.user?.score || 0) / 100) + 1 }}</span>
+              <span class="author-badge">{{ floorIdentity }}</span>
+            </div>
+            <div class="floor-meta">
+              <span>{{ formatDate(comment.createdAt) }}</span>
+              <span>{{ isReplyComment ? '参与回复' : '发起讨论' }}</span>
+              <span>UID {{ comment.userId }}</span>
+            </div>
+          </div>
+          <div class="floor-stats">
+            <span>{{ comment.likeCount }} 赞同</span>
+            <span>{{ comment.replyCount || comment.replies?.length || 0 }} 回复</span>
+          </div>
+        </div>
+
+        <div v-if="comment.title && !isReplyComment" class="thread-title-row">
+          <div class="thread-heading">
+            <div class="thread-chip-row">
+              <span v-if="comment.isPinned" class="thread-badge pin">置顶</span>
+              <span v-if="comment.isFeatured" class="thread-badge featured">精华</span>
+              <span class="thread-badge hot">{{ comment.category || '综合讨论' }}</span>
+            </div>
+            <h1 class="thread-title">{{ comment.title }}</h1>
+          </div>
+          <div class="thread-badges">
+            <span v-for="tag in comment.tags || []" :key="tag" class="thread-badge plain"># {{ tag }}</span>
+            <span v-if="comment.replyCount >= 5" class="thread-badge plain">高活跃</span>
+          </div>
+        </div>
+
+        <div v-if="comment.quote" class="quote-box">
+          <span class="quote-box-label">引用 {{ comment.quote.user?.username || `UID ${comment.quote.userId}` }} 的观点</span>
+          <p>{{ quoteExcerpt }}</p>
+        </div>
+
+        <div
+          class="comment-content"
+          :class="{ teaser: !props.fullContent }"
+          @click="handleContentClick"
         >
-          <svg viewBox="0 0 24 24" width="20" height="20">
-            <path :fill="isLiked ? '#ff4d4f' : '#8f959e'"
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
-          <span class="like-count">{{ comment.likeCount }}</span>
-        </button>
-        <span class="reply-count">
-          <svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align: middle;">
-            <path fill="#8f959e" d="M10 9V5l-7 7 7 7v-4.1c4.55 0 7.72 1.95 9.72 6.1-1.43-5.72-5.19-10-9.72-10z" />
-          </svg>
-          {{ comment.replyCount || (comment.replies ? comment.replies.length : 0) }} 回复
-        </span>
-        <button v-if="!isReplyComment && isInDetailPage" class="reply-btn" @click="showReplyForm = true">
-          回复
-        </button>
-        <button v-if="isAuthor" class="delete-btn" @click="handleDelete">
-          删除
-        </button>
-      </div>
-      <div v-if="props.showReplies && comment.replies && comment.replies.length > 0" class="replies">
-        <CommentItem
-          v-for="reply in comment.replies"
-          :key="reply.id"
-          :comment="reply"
-          :current-user-id="currentUserId"
-          :show-replies="true"
-          @delete="emit('delete', $event)"
-        />
+          <div v-html="safeContent"></div>
+        </div>
+
+        <div class="comment-actions">
+          <button class="action-btn like-btn" :class="{ liked: isLiked }" @click="handleLike">
+            <span>赞同</span>
+            <strong>{{ comment.likeCount }}</strong>
+          </button>
+          <button class="action-btn reply-btn" @click="showReplyForm = true">
+            {{ isReplyComment ? '引用回复' : '回复主题' }}
+          </button>
+          <button v-if="!isReplyComment && !props.fullContent" class="action-btn" @click="goToDetail">
+            查看全文
+          </button>
+          <button v-if="canDelete" class="action-btn danger-btn" @click="handleDelete">
+            删除
+          </button>
+        </div>
+
+        <div v-if="props.showReplies && comment.replies && comment.replies.length > 0" class="reply-stack">
+          <CommentItem
+            v-for="(reply, index) in comment.replies"
+            :key="reply.id"
+            :comment="reply"
+            :current-user-id="currentUserId"
+            :current-user-role="currentUserRole"
+            :thread-author-id="resolvedThreadAuthorId"
+            :floor-label="`#${index + 2}`"
+            :show-replies="true"
+            @delete="emit('delete', $event)"
+            @like="emit('like', $event)"
+            @update="emit('update', $event)"
+          />
+        </div>
       </div>
     </div>
-    <CommentForm v-else :parent-id="comment.id" @submitted="handleReplySubmitted" @cancelled="handleReplyCancelled" />
-  </div>
+
+    <div v-else class="reply-composer">
+      <CommentForm
+        :parent-id="comment.id"
+        :quote-id="comment.id"
+        :reply-to-user="comment.user?.username || '开发者'"
+        :quote-preview="plainContent"
+        @submitted="handleReplySubmitted"
+        @cancelled="handleReplyCancelled"
+      />
+    </div>
+  </article>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { MainComment } from '~/types/comment';
-import { deleteComment, updateComment } from '~/api/commentApi';
-import { useRouter, useRoute } from 'vue-router';
-import CommentForm from './CommentForm.vue';
+import { useRoute, useRouter } from 'vue-router';
 import DOMPurify from 'dompurify';
 import defaultAvatar from '~/assets/icon/default-avatar.png';
-
-const safeContent = computed(() => DOMPurify.sanitize(props.comment.content));
+import CommentForm from './CommentForm.vue';
 
 const props = defineProps<{
   comment: MainComment;
   currentUserId: number;
+  currentUserRole?: string;
+  threadAuthorId?: number;
+  floorLabel?: string;
   showReplies?: boolean;
-  rank?: number; // 新增
-  fullContent?: boolean; // 新增
+  fullContent?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: 'reply', commentId: number): void;
   (e: 'update', comment: MainComment): void;
   (e: 'delete', commentId: number): void;
   (e: 'like', commentId: number): void;
@@ -97,273 +132,630 @@ const emit = defineEmits<{
 const router = useRouter();
 const route = useRoute();
 const showReplyForm = ref(false);
-const isInDetailPage = computed(() => route.name === 'comment-commentId' || route.path.startsWith('/comment/'));
 
-// 判断是否为回复
-const isReplyComment = computed(() => {
-  return props.comment.parentId !== null && props.comment.parentId !== undefined;
+const safeContent = computed(() => DOMPurify.sanitize(props.comment.content));
+const plainContent = computed(() => props.comment.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+const quoteExcerpt = computed(() => {
+  const text = (props.comment.quote?.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return text.length > 90 ? `${text.slice(0, 90)}...` : text;
+});
+const isReplyComment = computed(() => props.comment.parentId !== null && props.comment.parentId !== undefined);
+const isAuthor = computed(() => props.comment.userId === props.currentUserId);
+const isAdmin = computed(() => (props.currentUserRole || '').toUpperCase() === 'ADMIN');
+const canDelete = computed(() => isAuthor.value || isAdmin.value);
+const isLiked = computed(() => props.comment.likes?.some(like => like.userId === props.currentUserId));
+const avatarUrl = computed(() => props.comment.user?.avatar || defaultAvatar);
+const resolvedThreadAuthorId = computed(() => props.threadAuthorId || props.comment.userId);
+const isThreadAuthor = computed(() => props.comment.userId === resolvedThreadAuthorId.value);
+const floorMark = computed(() => props.floorLabel || '题主');
+const floorIdentity = computed(() => {
+  if (isAdmin.value)
+    return '管理员';
+  if (isThreadAuthor.value)
+    return isReplyComment.value ? '题主补充' : '题主';
+  return isReplyComment.value ? '参与者' : '发起人';
+});
+const roleLabel = computed(() => {
+  if (isAdmin.value)
+    return 'ADMIN';
+  if (isThreadAuthor.value)
+    return 'AUTHOR';
+  return 'USER';
 });
 
-// 判断当前用户是否为评论作者
-const isAuthor = computed(() => {
-  return props.comment.userId === props.currentUserId;
-});
+function formatDate(dateString: string | Date) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-// 判断当前用户是否已点赞
-const isLiked = computed(() => {
-  return props.comment.likes?.some(like => like.userId === props.currentUserId);
-});
+  if (diffInSeconds < 60)
+    return '刚刚';
+  if (diffInSeconds < 3600)
+    return `${Math.floor(diffInSeconds / 60)} 分钟前`;
+  if (diffInSeconds < 86400)
+    return `${Math.floor(diffInSeconds / 3600)} 小时前`;
+  if (diffInSeconds < 2592000)
+    return `${Math.floor(diffInSeconds / 86400)} 天前`;
 
-// 头像地址，优先用用户头像，否则用默认头像
-const avatarUrl = computed(() => {
-  return props.comment.user?.avatar || defaultAvatar;
-});
-
-// 格式化日期
-const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat('zh-CN', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
   }).format(date);
-};
+}
 
-// 处理回复
-const handleReply = () => {
-  emit('reply', props.comment.id);
-};
-
-// 处理删除
-const handleDelete = async () => {
-  if (!confirm('确定要删除这条评论吗？')) {
+function handleDelete() {
+  if (!confirm('确定删除这层内容吗？')) {
     return;
   }
+  emit('delete', props.comment.id);
+}
 
-  try {
-    await deleteComment(props.comment.id);
-    emit('delete', props.comment.id);
-    console.log('评论删除成功');
-  } catch (error) {
-    console.error('删除评论失败:', error);
-    alert('删除失败，请重试');
-  }
-};
-
-// 处理更新（用于子评论）
-const handleUpdate = (updatedComment: MainComment) => {
-  emit('update', updatedComment);
-};
-
-// 处理点赞（用于子评论）
-const handleLike = async () => {
+function handleLike() {
   emit('like', props.comment.id);
-};
+}
 
-const goToDetail = () => {
+function handleContentClick() {
+  if (props.fullContent) {
+    return;
+  }
+  goToDetail();
+}
+
+function goToDetail() {
+  if (route.path === `/comment/${props.comment.id}`) {
+    return;
+  }
   router.push(`/comment/${props.comment.id}`);
-};
+}
 
 function handleReplySubmitted() {
   showReplyForm.value = false;
-  // 可选：刷新当前评论树
   emit('update', props.comment);
 }
 
 function handleReplyCancelled() {
   showReplyForm.value = false;
 }
-
-const topRankClass = computed(() => {
-  if (!props.rank) return '';
-  if (props.rank === 1) return 'top1';
-  if (props.rank === 2) return 'top2';
-  if (props.rank === 3) return 'top3';
-  return '';
-});
 </script>
+
 <style scoped>
-.comment-item {
-  padding: 16px;
-  border-radius: 6px;
-  @apply bg-white dark:bg-[#0d1117];
-  border: 1px solid rgba(27, 31, 36, 0.15);
-  @apply dark:border-gray-700;
-  transition: all 0.2s ease;
-  position: relative;
+.floor-card {
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
-.comment-item:hover {
-  @apply border-gray-300 dark:border-gray-600;
+.floor-card.is-thread {
+  border-radius: 26px;
 }
 
-:deep(.comment-item:not(.is-reply)) {
-  @apply bg-white dark:bg-[#0d1117];
+.floor-card.is-reply {
+  margin-top: 14px;
+  border-radius: 20px;
 }
 
-.is-reply {
-  @apply bg-transparent dark:bg-transparent;
-  margin-left: 32px;
-  margin-top: 16px;
-  padding: 16px 0 0 0;
-  border: none;
-  border-top: 1px solid rgba(27, 31, 36, 0.15);
-  @apply dark:border-gray-700;
-  border-radius: 0;
+.floor-layout {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 20px;
+  padding: 20px;
 }
 
-.is-reply:hover {
-  @apply bg-transparent border-t border-gray-200 dark:border-gray-700;
+.floor-aside {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 10px;
 }
 
-.comment-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
+.floor-mark {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  background: #f1f5f9;
 }
 
 .avatar {
-  width: 28px;
-  height: 28px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  margin-right: 8px;
-  object-fit: cover;
-  @apply border border-gray-200 dark:border-gray-700;
+  border: 1px solid #e2e8f0;
+}
+
+.author-role {
+  min-width: 58px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(211, 221, 245, 0.66);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.author-role.admin {
+  color: #ffe1b1;
+  background: rgba(249, 115, 22, 0.18);
+}
+
+.author-role.author {
+  color: #dbe7ff;
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.floor-body {
+  min-width: 0;
+}
+
+.floor-header,
+.comment-actions,
+.thread-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.floor-author-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .author-name {
-  font-weight: 600;
-  margin-right: 8px;
-  @apply text-gray-900 dark:text-white;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
-.comment-date {
+.author-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+  background: #f1f5f9;
+}
+
+.author-custom-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.author-level {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  font-style: italic;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.floor-meta {
+  display: flex;
+  gap: 12px;
   font-size: 12px;
-  @apply text-gray-500 dark:text-gray-400;
+  color: #94a3b8;
+}
+
+.floor-stats {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.thread-title-row {
+  margin-top: 16px;
+  align-items: flex-start;
+}
+
+.thread-heading {
+  display: grid;
+  gap: 10px;
+}
+
+.thread-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.thread-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: #0f172a;
+}
+
+.thread-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.thread-badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.thread-badge.hot {
+  color: #dfe9ff;
+  background: rgba(59, 130, 246, 0.16);
+}
+
+.thread-badge.pin {
+  color: #ffe5bc;
+  background: rgba(249, 115, 22, 0.16);
+}
+
+.thread-badge.featured {
+  color: #d9fbe9;
+  background: rgba(16, 185, 129, 0.16);
+}
+
+.thread-badge.plain {
+  color: rgba(210, 220, 243, 0.66);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .comment-content {
-  display: block;
-  line-height: 1.5;
-  font-size: 14px;
-  @apply text-gray-900 dark:text-gray-100;
-  word-break: break-word;
-  text-align: left;
-  margin-left: 36px; /* Align with text, not avatar */
-}
-
-.comment-content.comment-ellipsis {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.reply-btn {
-  background: none;
-  border: none;
-  @apply text-gray-500 dark:text-gray-400;
-  cursor: pointer;
-  padding: 0;
-  font-size: 12px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-.action-btn:hover {
-  color: #138AFA;
-}
-
-.reply-form {
   margin-top: 16px;
-  margin-left: 36px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #334155;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
-.replies {
-  margin-top: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+.quote-box {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-left: 3px solid #cbd5e1;
+  background: #f8fafc;
+  border-radius: 0 8px 8px 0;
 }
 
-.reply-item {
-  margin-top: 0;
+.quote-box-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 4px;
+}
+
+.quote-box p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.comment-content.teaser {
+  max-height: 240px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.comment-content.teaser::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(transparent, #ffffff);
+}
+
+:deep(.comment-content p) {
+  margin-bottom: 12px;
+}
+
+:deep(.comment-content p:last-child) {
+  margin-bottom: 0;
+}
+
+:deep(.comment-content img) {
+  max-width: 100%;
+  border-radius: 14px;
+  margin-top: 8px;
+}
+
+:deep(.comment-content a) {
+  color: #8db3ff;
+  text-decoration: underline;
+}
+
+:deep(.comment-content code) {
+  padding: 2px 6px;
+  border-radius: 8px;
+  color: #dbe7ff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+:deep(.comment-content pre) {
+  padding: 14px;
+  border-radius: 16px;
+  overflow-x: auto;
+  background: rgba(7, 12, 22, 0.72);
+}
+
+:deep(.comment-content blockquote) {
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: rgba(220, 228, 245, 0.76);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .comment-actions {
-  margin-top: 8px;
-  margin-left: 36px;
   display: flex;
-  align-items: center;
-  gap: 16px;
+  gap: 8px;
+  margin-top: 16px;
 }
 
-.edit-btn,
-.delete-btn {
-  background: none;
-  border: none;
-  @apply text-gray-500 dark:text-gray-400 hover:text-red-500;
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: #f1f5f9;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
   cursor: pointer;
-  padding: 0;
-  font-size: 12px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-.like-btn {
-  background: none;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  transition: color 0.2s;
-  padding: 0;
-  @apply text-gray-500 dark:text-gray-400;
-}
 .action-btn:hover {
-  color: #138AFA;
+  background: #e2e8f0;
 }
 
-.like-btn.liked svg path {
-  fill: #ef4444;
+.like-btn.liked {
+  color: #ef4444;
+  background: #fef2f2;
 }
 
-.like-count {
-  font-size: 12px;
-  font-weight: 500;
-  transition: color 0.2s;
+.danger-btn {
+  color: #ef4444;
 }
 
-.like-btn.liked .like-count {
-  @apply text-red-500;
+.danger-btn:hover {
+  background: #fef2f2;
 }
 
-.reply-count {
-  display: none; /* Hide in GitHub style, it's visually implied by the replies thread */
+.reply-stack {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(129, 150, 198, 0.12);
 }
 
-.top-rank-badge {
-  position: absolute;
-  left: -12px;
-  top: 12px;
-  font-weight: bold;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #ffd700 0%, #b8860b 100%);
-  color: #fff;
-  z-index: 2;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+.reply-composer {
+  padding: 18px;
 }
-.comment-item.top1 { @apply border-yellow-400; }
-.comment-item.top2 { @apply border-gray-400; }
-.comment-item.top3 { @apply border-orange-400; }
 
-.comment-detail {
-  position: relative;
+@media (max-width: 768px) {
+  .floor-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .floor-aside {
+    grid-auto-flow: column;
+    justify-content: start;
+    align-items: center;
+  }
+
+  .thread-title-row,
+  .floor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
+
+
+/* Dark Mode Overrides */
+html.dark .forum-shell,
+html.dark .thread-page {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+html.dark .hero-panel,
+html.dark .stat-card,
+html.dark .signal-card,
+html.dark .sidebar-card,
+html.dark .forum-main,
+html.dark .list-toolbar,
+html.dark .signal-strip,
+html.dark .thread-card,
+html.dark .state-card,
+html.dark .error-message,
+html.dark .thread-main,
+html.dark .side-card,
+html.dark .floor-card,
+html.dark .comment-form,
+html.dark .modal-content {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .hero-title,
+html.dark .stat-value,
+html.dark .signal-title,
+html.dark .sidebar-card-header h3,
+html.dark .user-pill p,
+html.dark .toolbar-title,
+html.dark .thread-title,
+html.dark .signal-item strong,
+html.dark .headline-title,
+html.dark .side-card-header h3,
+html.dark .side-stat-grid strong,
+html.dark .author-name,
+html.dark .heading-group h3,
+html.dark .quote-preview strong {
+  color: #f8fafc;
+}
+
+html.dark .hero-desc,
+html.dark .bullet-list li,
+html.dark .thread-excerpt,
+html.dark .comment-content,
+html.dark .switch-item span {
+  color: #cbd5e1;
+}
+
+html.dark .stat-label,
+html.dark .sidebar-card-header span,
+html.dark .signal-meta,
+html.dark .user-pill span,
+html.dark .mood-note,
+html.dark .toolbar-meta,
+html.dark .signal-label,
+html.dark .thread-author span,
+html.dark .headline-meta,
+html.dark .filter-note,
+html.dark .side-card-header span,
+html.dark .side-stat-grid span,
+html.dark .floor-meta,
+html.dark .floor-stats,
+html.dark .quote-box p,
+html.dark .meta-field span,
+html.dark .quote-preview p,
+html.dark .composer-tip {
+  color: #94a3b8;
+}
+
+html.dark .secondary-btn,
+html.dark .hero-tag,
+html.dark .shortcut-item,
+html.dark .mood-chip,
+html.dark .search-input,
+html.dark .sort-select select,
+html.dark .category-tab,
+html.dark .page-btn,
+html.dark .nav-btn,
+html.dark .admin-btn,
+html.dark .floor-mark,
+html.dark .author-badge,
+html.dark .quote-box,
+html.dark .action-btn,
+html.dark .close-btn,
+html.dark .meta-select,
+html.dark .meta-input,
+html.dark .title-input,
+html.dark .quote-preview,
+html.dark .cancel-btn {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+html.dark .secondary-btn:hover,
+html.dark .shortcut-item:hover,
+html.dark .page-btn:hover:not(:disabled),
+html.dark .nav-btn:hover,
+html.dark .admin-btn:hover,
+html.dark .action-btn:hover,
+html.dark .close-btn:hover,
+html.dark .cancel-btn:hover {
+  background: #475569;
+}
+
+html.dark .search-input:focus,
+html.dark .meta-select:focus,
+html.dark .meta-input:focus,
+html.dark .title-input:focus {
+  background: #1e293b;
+  border-color: #3b82f6;
+  color: #f8fafc;
+}
+
+html.dark .shortcut-item.active,
+html.dark .view-tab.active,
+html.dark .category-tab.active {
+  background: #1e3a8a;
+  color: #60a5fa;
+  border-color: #1e3a8a;
+}
+
+html.dark .thread-type,
+html.dark .enter-btn {
+  background: #1e3a8a;
+  color: #60a5fa;
+}
+
+html.dark .enter-btn:hover {
+  background: #1e40af;
+}
+
+html.dark .thread-badge.hot,
+html.dark .thread-badge.pin {
+  background: #7c2d12;
+  color: #fdba74;
+}
+
+html.dark .thread-badge.featured {
+  background: #14532d;
+  color: #86efac;
+}
+
+html.dark .thread-badge.plain {
+  background: #334155;
+  color: #cbd5e1;
+}
+
+html.dark .admin-btn.active {
+  background: #854d0e;
+  color: #fef08a;
+  border-color: #854d0e;
+}
+
+html.dark .like-btn.liked {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+html.dark .delete-btn,
+html.dark .danger-btn {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+html.dark .delete-btn:hover,
+html.dark .danger-btn:hover {
+  background: #991b1b;
+}
+
+html.dark .modal-footer,
+html.dark .form-footer,
+html.dark .thread-headline,
+html.dark .thread-footer {
+  border-color: #334155;
+}
+
+html.dark .modal-footer,
+html.dark .form-header,
+html.dark .modal-body {
+  background: transparent;
+}
+
 </style>

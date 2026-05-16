@@ -56,17 +56,25 @@ model Message {
 
 model Comment {
   id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  title     String?   @db.VarChar(120)
+  category  String?   @db.VarChar(40)
+  tags      String?   @db.VarChar(255)
   content   String    @db.Text
   userId    Int       @map("user_id") @db.UnsignedInt
   parentId  Int?      @map("parent_id") @db.UnsignedInt
+  quoteId   Int?      @map("quote_id") @db.UnsignedInt
+  isPinned  Boolean   @default(false) @map("is_pinned")
+  isFeatured Boolean  @default(false) @map("is_featured")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  user    User       @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  parent  Comment?   @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies Comment[]  @relation("CommentReplies")
-  likes   CommentLike[]
+  user      User       @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  parent    Comment?   @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[]  @relation("CommentReplies")
+  quote     Comment?   @relation("CommentQuotes", fields: [quoteId], references: [id], onDelete: SetNull)
+  quotedBy  Comment[]  @relation("CommentQuotes")
+  likes     CommentLike[]
 
   @@map("comment")
 }

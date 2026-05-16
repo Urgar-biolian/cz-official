@@ -40,7 +40,19 @@ watch(valueHtml, (newHtml) => {
   emits("update:modelValue", newHtml)
 })
 
-const toolbarConfig = {}
+const toolbarConfig = {
+  toolbarKeys: [
+    'bold',
+    'italic',
+    'underline',
+    '|',
+    'uploadImage',
+    'insertLink',
+    '|',
+    'codeBlock',
+    'blockquote',
+  ]
+}
 
 const editorConfig = {
   placeholder: props.placeholder,
@@ -72,7 +84,7 @@ const handleCreated = (editor: any) => {
 
 <style scoped>
 .editor-wrapper {
-  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700;
+  @apply bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
@@ -81,18 +93,18 @@ const handleCreated = (editor: any) => {
 }
 
 .editor-toolbar {
-  @apply border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800;
+  @apply border-b border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800;
 }
 
 .editor-main {
-  height: 300px;
+  height: 150px;
   overflow-y: auto;
   @apply bg-white dark:bg-gray-900;
 }
 
 /* WangEditor responsive overrides */
 :deep(.w-e-text-container) {
-  @apply text-gray-800 dark:text-gray-200 bg-transparent;
+  @apply text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900;
 }
 :deep(.w-e-toolbar) {
   @apply bg-transparent border-none !important;

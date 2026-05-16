@@ -13,7 +13,7 @@ import {
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { Auth, Admin } from '../auth/decorators/auth.decorator';
+import { Auth } from '../auth/decorators/auth.decorator';
 import { CurrentUser } from '../auth/decorators/user.decorator';
 
 @Controller('comments')
@@ -26,10 +26,12 @@ export class CommentController {
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('sort', new DefaultValuePipe('latest')) sort: string,
+    @Query('category') category?: string,
     @Query('include_deleted') includeDeleted?: string,
   ) {
     const include = includeDeleted === 'true';
-    return this.commentService.findAll(page, pageSize, include);
+    return this.commentService.findAll(page, pageSize, sort, include, category);
   }
 
   @Get(':id')
@@ -42,20 +44,30 @@ export class CommentController {
   async create(
     @Body() createCommentDto: CreateCommentDto,
     @CurrentUser('userId') userId: number,
+    @CurrentUser('role') userRole?: string,
   ) {
-    return this.commentService.create(createCommentDto, userId);
+    return this.commentService.create(createCommentDto, userId, userRole);
   }
 
   @Auth()
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentService.update(id, updateCommentDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCommentDto: UpdateCommentDto,
+    @CurrentUser('userId') userId: number,
+    @CurrentUser('role') userRole?: string,
+  ) {
+    return this.commentService.update(id, updateCommentDto, userId, userRole);
   }
 
-  @Admin()
+  @Auth()
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.commentService.remove(id);
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('userId') userId: number,
+    @CurrentUser('role') userRole?: string,
+  ) {
+    return this.commentService.remove(id, userId, userRole);
   }
 
   @Auth()

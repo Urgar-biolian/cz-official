@@ -4,6 +4,8 @@ export interface CommentListParams {
   include_deleted?: boolean;
   page?: number;
   pageSize?: number;
+  sort?: 'latest' | 'top';
+  category?: string;
 }
 
 export const getComments = async (
@@ -23,8 +25,14 @@ export const getCommentById = async (commentId: number): Promise<MainComment> =>
 
 export const saveComment = async (commentData: CreateCommentDTO) => {
   const requestData = {
+    title: commentData.title,
+    category: commentData.category,
+    tags: commentData.tags,
     content: commentData.content,
     parentId: commentData.parent_id || null,
+    quoteId: commentData.quote_id || null,
+    isPinned: commentData.isPinned,
+    isFeatured: commentData.isFeatured,
   };
 
   return defHttp.post({

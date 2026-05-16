@@ -12,7 +12,9 @@
           <router-link to="/member" class="item" :class="{ 'active': route.path === '/member' }"
             cursor-pointer>成员</router-link>
           <router-link to="/lanqiao" class="item" :class="{ 'active': route.path === '/lanqiao' }"
-            cursor-pointer>蓝桥</router-link>
+            cursor-pointer>成就</router-link>
+          <router-link to="/comment" class="item" :class="{ 'active': route.path === '/comment' }"
+            cursor-pointer>蓝桥讨论区</router-link>
 
           <a class="item" href="http://docs.czstudio.tech/" target="_blank" flex items-center>文档<div inline-block
               i-ri:share-box-fill text-4 ml-1>
@@ -71,7 +73,9 @@
         <router-link to="/member" class="phone-link dark:border-gray-800" border-b :class="{ 'active': route.path === '/member' }"
           cursor-pointer h-12 flex items-center pl-8 @click="closeMenu">成员</router-link>
         <router-link to="/lanqiao" class="phone-link dark:border-gray-800" border-b :class="{ 'active': route.path === '/lanqiao' }"
-          cursor-pointer h-12 flex items-center pl-8 @click="closeMenu">蓝桥</router-link>
+          cursor-pointer h-12 flex items-center pl-8 @click="closeMenu">成就</router-link>
+        <router-link to="/comment" class="phone-link dark:border-gray-800" border-b :class="{ 'active': route.path === '/comment' }"
+          cursor-pointer h-12 flex items-center pl-8 @click="closeMenu">蓝桥讨论区</router-link>
         <div class="phone-link dark:border-gray-800" border-b cursor-pointer h-12 flex items-center pl-8 @click="showMobileCalendar">
           活动日历
           <CarryOutOutlined class="ml-2" />

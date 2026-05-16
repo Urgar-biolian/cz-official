@@ -1,14 +1,16 @@
 <template>
-  <main font-sans text="center" w-full class=" min-h-[100vh]" relative>
+  <main font-sans text="center" w-full class="min-h-screen flex flex-col" relative>
     <Header></Header>
-    <RouterView sm:pt-20 pb-80 v-slot="{ Component }" v-if="isRouterActive">
-      <KeepAlive>
-        <Transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </Transition>
-      </KeepAlive>
-    </RouterView>
-    <Footer />
+    <div class="flex-1 flex flex-col" sm:pt-20>
+      <RouterView v-slot="{ Component }" v-if="isRouterActive">
+        <KeepAlive>
+          <Transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </Transition>
+        </KeepAlive>
+      </RouterView>
+    </div>
+    <Footer class="relative z-30" />
     <MobileActivityCalendar />
     <ActivityCalendar />
     <div class="bg pointer-events-none fixed inset-0 z-[-1] select-none bg-top bg-repeat"></div>
